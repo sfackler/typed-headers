@@ -7,10 +7,9 @@ use http::header::{self, HeaderMap, HeaderName, HeaderValue, InvalidHeaderValue}
 pub trait Header {
     fn name() -> &'static HeaderName;
 
-    fn parse<'a, I>(values: I) -> Result<Option<Self>, ParseError>
+    fn parse<'a>(values: header::GetAll<'a>) -> Result<Option<Self>, ParseError>
     where
-        Self: Sized,
-        I: IntoIterator<Item = &'a HeaderValue>;
+        Self: Sized;
 
     fn to_values(&self, values: &mut ToValues) -> Result<(), InvalidHeaderValue>;
 }
