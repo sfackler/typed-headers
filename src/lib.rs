@@ -1,7 +1,60 @@
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
+extern crate http;
+
+use std::mem;
+
+use http::header::{self, HeaderMap, HeaderName, HeaderValue, InvalidHeaderValue};
+
+pub trait Header {
+    fn name() -> &'static HeaderName;
+
+    fn parse<'a, I>(values: I) -> Result<Option<Self>, ParseError>
+    where
+        Self: Sized,
+        I: IntoIterator<Item = &'a HeaderValue>;
+
+    fn to_values(&self, values: &mut ToValues) -> Result<(), InvalidHeaderValue>;
+}
+
+pub struct ParseError(());
+
+enum ToValuesState<'a> {
+    First(header::Entry<'a, HeaderValue>),
+    Latter(header::OccupiedEntry<'a, HeaderValue>),
+    Tmp,
+}
+
+pub struct ToValues<'a>(ToValuesState<'a>);
+
+impl<'a> ToValues<'a> {
+    pub fn append(&mut self, value: HeaderValue) {
+        let entry = match mem::replace(&mut self.0, ToValuesState::Tmp) {
+            ToValuesState::First(header::Entry::Occupied(mut e)) => {
+                e.append(value);
+                e
+            }
+            ToValuesState::First(header::Entry::Vacant(e)) => e.insert_entry(value),
+            ToValuesState::Latter(mut e) => {
+                e.append(value);
+                e
+            }
+            ToValuesState::Tmp => unreachable!(),
+        };
+        self.0 = ToValuesState::Latter(entry);
     }
+}
+
+pub fn get<H>(headers: &HeaderMap) -> Result<Option<H>, ParseError>
+where
+    H: Header,
+{
+    H::parse(headers.get_all(H::name()))
+}
+
+pub fn set<H>(headers: &mut HeaderMap, header: &H) -> Result<(), InvalidHeaderValue>
+where
+    H: Header,
+{
+    let entry = headers.entry(H::name()).unwrap();
+    let mut values = ToValues(ToValuesState::First(entry));
+    header.to_values(&mut values)
 }
