@@ -42,18 +42,30 @@ impl<'a> ToValues<'a> {
     }
 }
 
-pub fn get<H>(headers: &HeaderMap) -> Result<Option<H>, ParseError>
-where
-    H: Header,
-{
-    H::parse(headers.get_all(H::name()))
+pub trait HeaderMapExt {
+    fn typed_get<H>(&self) -> Result<Option<H>, ParseError>
+    where
+        H: Header;
+
+    fn typed_set<H>(&mut self, header: &H) -> Result<(), InvalidHeaderValue>
+    where
+        H: Header;
 }
 
-pub fn set<H>(headers: &mut HeaderMap, header: &H) -> Result<(), InvalidHeaderValue>
-where
-    H: Header,
-{
-    let entry = headers.entry(H::name()).unwrap();
-    let mut values = ToValues(ToValuesState::First(entry));
-    header.to_values(&mut values)
+impl HeaderMapExt for HeaderMap {
+    fn typed_get<H>(&self) -> Result<Option<H>, ParseError>
+    where
+        H: Header,
+    {
+        H::parse(self.get_all(H::name()))
+    }
+
+    fn typed_set<H>(&mut self, header: &H) -> Result<(), InvalidHeaderValue>
+    where
+        H: Header,
+    {
+        let entry = self.entry(H::name()).unwrap();
+        let mut values = ToValues(ToValuesState::First(entry));
+        header.to_values(&mut values)
+    }
 }
