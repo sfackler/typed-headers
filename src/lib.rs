@@ -28,7 +28,7 @@ impl<'a> ToValues<'a> {
     pub fn append(&mut self, value: HeaderValue) {
         let entry = match mem::replace(&mut self.0, ToValuesState::Tmp) {
             ToValuesState::First(header::Entry::Occupied(mut e)) => {
-                e.append(value);
+                e.insert(value);
                 e
             }
             ToValuesState::First(header::Entry::Vacant(e)) => e.insert_entry(value),
