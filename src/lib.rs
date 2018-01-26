@@ -3,6 +3,12 @@ extern crate http;
 use std::mem;
 
 use http::header::{self, HeaderMap, HeaderName, HeaderValue, InvalidHeaderValue};
+use std::error::Error;
+
+pub use impls::*;
+
+mod impls;
+pub mod parsing;
 
 pub trait Header {
     /// Returns the name of this header.
@@ -33,6 +39,21 @@ pub trait Header {
 }
 
 pub struct ParseError(());
+
+impl ParseError {
+    pub fn expected_one() -> ParseError {
+        ParseError(())
+    }
+}
+
+impl<T> From<T> for ParseError
+where
+    T: Error,
+{
+    fn from(_: T) -> ParseError {
+        ParseError(())
+    }
+}
 
 enum ToValuesState<'a> {
     First(header::Entry<'a, HeaderValue>),
