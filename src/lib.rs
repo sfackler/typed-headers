@@ -1,7 +1,7 @@
 pub extern crate http;
 
-use http::header::{self, HeaderMap, HeaderName, HeaderValue, InvalidHeaderValue};
-use std::error::Error;
+use http::header::{self, HeaderMap, HeaderName, HeaderValue};
+use std::error;
 use std::fmt;
 use std::mem;
 
@@ -25,9 +25,7 @@ pub trait Header {
     ///
     /// If the iterator is not exhausted when this function returns, it will be treated as a parse
     /// error.
-    fn parse<'a>(
-        values: &mut header::ValueIter<'a, HeaderValue>,
-    ) -> Result<Option<Self>, ParseError>
+    fn parse<'a>(values: &mut header::ValueIter<'a, HeaderValue>) -> Result<Option<Self>, Error>
     where
         Self: Sized;
 
@@ -35,36 +33,36 @@ pub trait Header {
     ///
     /// Each call to `values.append` adds a header entry. Almost all headers should only append a
     /// single value. `Set-Cookie` is a rare exception.
-    fn to_values(&self, values: &mut ToValues) -> Result<(), InvalidHeaderValue>;
+    fn to_values(&self, values: &mut ToValues) -> Result<(), Error>;
 }
 
 #[derive(Debug)]
-pub struct ParseError(());
+pub struct Error(());
 
-impl ParseError {
-    pub fn new<E>(_: E) -> ParseError
+impl Error {
+    pub fn new<E>(_: E) -> Error
     where
-        E: Into<Box<Error + Sync + Send>>,
+        E: Into<Box<error::Error + Sync + Send>>,
     {
-        ParseError(())
+        Error(())
     }
 
-    fn too_many_values() -> ParseError {
-        ParseError(())
+    fn too_many_values() -> Error {
+        Error(())
     }
 
-    fn empty_list() -> ParseError {
-        ParseError(())
+    fn empty_list() -> Error {
+        Error(())
     }
 }
 
-impl fmt::Display for ParseError {
+impl fmt::Display for Error {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         fmt.write_str("parse error")
     }
 }
 
-impl Error for ParseError {
+impl error::Error for Error {
     fn description(&self) -> &str {
         "parse error"
     }
@@ -98,34 +96,34 @@ impl<'a> ToValues<'a> {
 
 pub trait HeaderMapExt {
     /// Retrieves the specified header from the map, if present.
-    fn typed_get<H>(&self) -> Result<Option<H>, ParseError>
+    fn typed_get<H>(&self) -> Result<Option<H>, Error>
     where
         H: Header;
 
     /// Inserts the provided header into the map.
     ///
     /// This overwrites any existing entries for that header.
-    fn typed_set<H>(&mut self, header: &H) -> Result<(), InvalidHeaderValue>
+    fn typed_set<H>(&mut self, header: &H) -> Result<(), Error>
     where
         H: Header;
 }
 
 impl HeaderMapExt for HeaderMap {
-    fn typed_get<H>(&self) -> Result<Option<H>, ParseError>
+    fn typed_get<H>(&self) -> Result<Option<H>, Error>
     where
         H: Header,
     {
         let mut values = self.get_all(H::name()).iter();
         match H::parse(&mut values) {
             Ok(header) => match values.next() {
-                Some(_) => Err(ParseError::too_many_values()),
+                Some(_) => Err(Error::too_many_values()),
                 None => Ok(header),
             },
             Err(e) => Err(e),
         }
     }
 
-    fn typed_set<H>(&mut self, header: &H) -> Result<(), InvalidHeaderValue>
+    fn typed_set<H>(&mut self, header: &H) -> Result<(), Error>
     where
         H: Header,
     {

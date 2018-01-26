@@ -1,16 +1,16 @@
-use http::header::{self, HeaderValue, InvalidHeaderValue};
+use http::header::{self, HeaderValue};
 use std::str::FromStr;
 use std::fmt::{self, Write};
 
-use {ParseError, ToValues};
+use {Error, ToValues};
 
-pub fn from_one_str<T>(values: &mut header::ValueIter<HeaderValue>) -> Result<Option<T>, ParseError>
+pub fn from_one_str<T>(values: &mut header::ValueIter<HeaderValue>) -> Result<Option<T>, Error>
 where
-    T: FromStr<Err = ParseError>,
+    T: FromStr<Err = Error>,
 {
     match values.next() {
         Some(value) => {
-            let value = value.to_str().map_err(ParseError::new)?.trim().parse()?;
+            let value = value.to_str().map_err(Error::new)?.trim().parse()?;
             Ok(Some(value))
         }
         None => Ok(None),
@@ -19,16 +19,16 @@ where
 
 pub fn parse_comma_delimited<T>(
     values: &mut header::ValueIter<HeaderValue>,
-) -> Result<Option<Vec<T>>, ParseError>
+) -> Result<Option<Vec<T>>, Error>
 where
-    T: FromStr<Err = ParseError>,
+    T: FromStr<Err = Error>,
 {
     let mut out = vec![];
     let mut empty = true;
     for value in values {
         empty = false;
 
-        let value = value.to_str().map_err(ParseError::new)?;
+        let value = value.to_str().map_err(Error::new)?;
         for elem in value.split(',') {
             let elem = elem.trim();
             if elem.is_empty() {
@@ -47,10 +47,7 @@ where
     }
 }
 
-pub fn encode_comma_delimited<I>(
-    elements: I,
-    values: &mut ToValues,
-) -> Result<(), InvalidHeaderValue>
+pub fn encode_comma_delimited<I>(elements: I, values: &mut ToValues) -> Result<(), Error>
 where
     I: IntoIterator,
     I::Item: fmt::Display,
@@ -63,7 +60,7 @@ where
     for elem in it {
         write!(out, ",{}", elem).unwrap();
     }
-    let value = HeaderValue::from_str(&out)?;
+    let value = HeaderValue::from_str(&out).map_err(Error::new)?;
     values.append(value);
     Ok(())
 }

@@ -1,7 +1,7 @@
 use std::fmt;
 use std::str::FromStr;
 
-use ParseError;
+use Error;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum Inner {
@@ -68,10 +68,10 @@ impl fmt::Display for Encoding {
 
 impl FromStr for Encoding {
     // FIXME
-    type Err = ParseError;
+    type Err = Error;
 
     #[inline]
-    fn from_str(s: &str) -> Result<Encoding, ParseError> {
+    fn from_str(s: &str) -> Result<Encoding, Error> {
         Ok(Encoding::new(s))
     }
 }
