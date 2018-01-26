@@ -31,7 +31,7 @@ impl Header for Host {
     }
 
     fn parse(values: &mut header::ValueIter<HeaderValue>) -> Result<Option<Host>, Error> {
-        parsing::from_one_str(values)
+        parsing::parse_single_value(values)
     }
 
     fn to_values(&self, values: &mut ToValues) -> Result<(), Error> {

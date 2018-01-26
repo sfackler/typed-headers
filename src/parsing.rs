@@ -1,20 +1,41 @@
+use bytes::BytesMut;
 use http::header::{self, HeaderValue};
-use std::str::FromStr;
+use std::error;
 use std::fmt::{self, Write};
+use std::str::FromStr;
 
 use {Error, ToValues};
 
-pub fn from_one_str<T>(values: &mut header::ValueIter<HeaderValue>) -> Result<Option<T>, Error>
+pub fn parse_single_value<T>(
+    values: &mut header::ValueIter<HeaderValue>,
+) -> Result<Option<T>, Error>
 where
-    T: FromStr<Err = Error>,
+    T: FromStr,
+    T::Err: Into<Box<error::Error + Sync + Send>>,
 {
     match values.next() {
         Some(value) => {
-            let value = value.to_str().map_err(Error::new)?.trim().parse()?;
+            let value = value
+                .to_str()
+                .map_err(Error::new)?
+                .trim()
+                .parse()
+                .map_err(Error::new)?;
             Ok(Some(value))
         }
         None => Ok(None),
     }
+}
+
+pub fn encode_single_value<T>(value: &T, values: &mut ToValues) -> Result<(), Error>
+where
+    T: fmt::Display,
+{
+    let mut buf = BytesMut::new();
+    write!(buf, "{}", value).unwrap();
+    let value = HeaderValue::from_shared(buf.freeze()).map_err(Error::new)?;
+    values.append(value);
+    Ok(())
 }
 
 pub fn parse_comma_delimited<T>(
@@ -23,7 +44,8 @@ pub fn parse_comma_delimited<T>(
     max: Option<usize>,
 ) -> Result<Option<Vec<T>>, Error>
 where
-    T: FromStr<Err = Error>,
+    T: FromStr,
+    T::Err: Into<Box<error::Error + Sync + Send>>,
 {
     let mut out = vec![];
     let mut empty = true;
@@ -37,7 +59,7 @@ where
                 continue;
             }
 
-            let elem = elem.parse()?;
+            let elem = elem.parse().map_err(Error::new)?;
             out.push(elem);
         }
     }

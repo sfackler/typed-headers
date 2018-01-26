@@ -1,7 +1,6 @@
 use std::fmt;
 use std::str::FromStr;
-
-use Error;
+use std::error;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum Inner {
@@ -67,11 +66,19 @@ impl fmt::Display for Encoding {
 }
 
 impl FromStr for Encoding {
-    // FIXME
-    type Err = Error;
+    type Err = Void;
 
     #[inline]
-    fn from_str(s: &str) -> Result<Encoding, Error> {
+    fn from_str(s: &str) -> Result<Encoding, Void> {
         Ok(Encoding::new(s))
+    }
+}
+
+#[doc(hidden)]
+pub enum Void {}
+
+impl From<Void> for Box<error::Error + Sync + Send> {
+    fn from(v: Void) -> Box<error::Error + Sync + Send> {
+        match v {}
     }
 }

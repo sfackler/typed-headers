@@ -1,3 +1,4 @@
+extern crate bytes;
 pub extern crate http;
 
 use http::header::{self, HeaderMap, HeaderName, HeaderValue};

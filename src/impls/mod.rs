@@ -1,4 +1,5 @@
 pub use impls::content_encoding::*;
+pub use impls::content_length::*;
 pub use impls::encoding::*;
 pub use impls::host::*;
 
@@ -7,7 +8,7 @@ macro_rules! header {
     ($(#[$a:meta])*($id:ident, $n:expr) => ($item:ty)+) => {
         $(#[$a])*
         #[derive(Clone, Debug, PartialEq)]
-        pub struct $id(pub Vec<$item>);
+        pub struct $id(pub ::std::vec::Vec<$item>);
         header!(@deref $id => Vec<$item>);
         impl $crate::Header for $id {
             #[inline]
@@ -33,6 +34,36 @@ macro_rules! header {
             }
         }
     };
+    // single value
+    ($(#[$a:meta])*($id:ident, $n:expr) => [$value:ty]) => {
+        $(#[$a])*
+        #[derive(Clone, Debug, PartialEq)]
+        pub struct $id(pub $value);
+        header!(@deref $id => $value);
+        impl $crate::Header for $id {
+            #[inline]
+            fn name() -> &'static $crate::http::header::HeaderName {
+                &$n
+            }
+
+            #[inline]
+            fn parse(
+                values: &mut $crate::http::header::ValueIter<$crate::http::header::HeaderValue>,
+            ) -> ::std::result::Result<::std::option::Option<$id>, $crate::Error>
+            {
+                $crate::parsing::parse_single_value(values).map(|r| r.map($id))
+            }
+
+            #[inline]
+            fn to_values(
+                &self,
+                values: &mut $crate::ToValues,
+            ) -> ::std::result::Result<(), $crate::Error>
+            {
+                $crate::parsing::encode_single_value(&self.0, values)
+            }
+        }
+    };
     (@deref $id:ident => $t:ty) => {
         impl ::std::ops::Deref for $id {
             type Target = $t;
@@ -53,5 +84,6 @@ macro_rules! header {
 }
 
 mod content_encoding;
+mod content_length;
 mod encoding;
 mod host;
