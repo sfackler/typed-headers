@@ -31,6 +31,8 @@ impl ContentCoding {
             ContentCoding::BROTLI
         } else if encoding.eq_ignore_ascii_case("gzip") {
             ContentCoding::GZIP
+        } else if encoding.eq_ignore_ascii_case("x-gzip") {
+            ContentCoding::GZIP
         } else if encoding.eq_ignore_ascii_case("deflate") {
             ContentCoding::DEFLATE
         } else if encoding.eq_ignore_ascii_case("compress") {
