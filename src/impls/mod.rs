@@ -1,6 +1,6 @@
+pub use impls::content_coding::*;
 pub use impls::content_encoding::*;
 pub use impls::content_length::*;
-pub use impls::encoding::*;
 pub use impls::host::*;
 
 macro_rules! header {
@@ -83,7 +83,7 @@ macro_rules! header {
     };
 }
 
+mod content_coding;
 mod content_encoding;
 mod content_length;
-mod encoding;
 mod host;

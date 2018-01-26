@@ -1,7 +1,7 @@
 use http::header::CONTENT_ENCODING;
 
-use impls::encoding::Encoding;
+use ContentCoding;
 
 header! {
-    (ContentEncoding, CONTENT_ENCODING) => (Encoding)+
+    (ContentEncoding, CONTENT_ENCODING) => (ContentCoding)+
 }
