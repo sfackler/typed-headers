@@ -48,10 +48,13 @@ impl Header for ContentLength {
                 }
 
                 let elem = elem.parse().map_err(Error::new)?;
-                if length.map_or(false, |l| l != elem) {
-                    return Err(Error::new("multiple non-identical Content-Length headers"));
+                match length {
+                    Some(length) if length != elem => {
+                        return Err(Error::new("multiple non-identical Content-Length headers"));
+                    }
+                    Some(_) => {}
+                    None => length = Some(elem),
                 }
-                length = Some(elem);
             }
         }
 
