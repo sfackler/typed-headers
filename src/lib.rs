@@ -1,4 +1,4 @@
-extern crate http;
+pub extern crate http;
 
 use std::mem;
 
@@ -42,6 +42,10 @@ pub struct ParseError(());
 
 impl ParseError {
     pub fn expected_one() -> ParseError {
+        ParseError(())
+    }
+
+    pub fn empty_list() -> ParseError {
         ParseError(())
     }
 }
