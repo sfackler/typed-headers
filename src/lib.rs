@@ -1,9 +1,9 @@
 pub extern crate http;
 
-use std::mem;
-
 use http::header::{self, HeaderMap, HeaderName, HeaderValue, InvalidHeaderValue};
 use std::error::Error;
+use std::fmt;
+use std::mem;
 
 pub use impls::*;
 
@@ -38,24 +38,35 @@ pub trait Header {
     fn to_values(&self, values: &mut ToValues) -> Result<(), InvalidHeaderValue>;
 }
 
+#[derive(Debug)]
 pub struct ParseError(());
 
 impl ParseError {
-    pub fn expected_one() -> ParseError {
+    pub fn new<E>(_: E) -> ParseError
+    where
+        E: Into<Box<Error + Sync + Send>>,
+    {
         ParseError(())
     }
 
-    pub fn empty_list() -> ParseError {
+    fn too_many_values() -> ParseError {
+        ParseError(())
+    }
+
+    fn empty_list() -> ParseError {
         ParseError(())
     }
 }
 
-impl<T> From<T> for ParseError
-where
-    T: Error,
-{
-    fn from(_: T) -> ParseError {
-        ParseError(())
+impl fmt::Display for ParseError {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        fmt.write_str("parse error")
+    }
+}
+
+impl Error for ParseError {
+    fn description(&self) -> &str {
+        "parse error"
     }
 }
 
@@ -107,7 +118,7 @@ impl HeaderMapExt for HeaderMap {
         let mut values = self.get_all(H::name()).iter();
         match H::parse(&mut values) {
             Ok(header) => match values.next() {
-                Some(_) => Err(ParseError(())),
+                Some(_) => Err(ParseError::too_many_values()),
                 None => Ok(header),
             },
             Err(e) => Err(e),

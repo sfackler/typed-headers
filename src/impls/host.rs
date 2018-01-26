@@ -49,7 +49,10 @@ impl FromStr for Host {
 
     fn from_str(s: &str) -> Result<Host, ParseError> {
         let (hostname, port) = match s.rfind(':') {
-            Some(idx) => (&s[..idx], Some(s[idx + 1..].parse()?)),
+            Some(idx) => (
+                &s[..idx],
+                Some(s[idx + 1..].parse().map_err(ParseError::new)?),
+            ),
             None => (s, None),
         };
 

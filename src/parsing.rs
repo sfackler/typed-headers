@@ -10,7 +10,7 @@ where
 {
     match values.next() {
         Some(value) => {
-            let value = value.to_str()?.trim().parse()?;
+            let value = value.to_str().map_err(ParseError::new)?.trim().parse()?;
             Ok(Some(value))
         }
         None => Ok(None),
@@ -28,7 +28,7 @@ where
     for value in values {
         empty = false;
 
-        let value = value.to_str()?;
+        let value = value.to_str().map_err(ParseError::new)?;
         for elem in value.split(',') {
             let elem = elem.trim();
             if elem.is_empty() {
