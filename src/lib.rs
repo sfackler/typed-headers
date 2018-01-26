@@ -50,10 +50,6 @@ impl Error {
     fn too_many_values() -> Error {
         Error(())
     }
-
-    fn empty_list() -> Error {
-        Error(())
-    }
 }
 
 impl fmt::Display for Error {

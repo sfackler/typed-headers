@@ -20,16 +20,7 @@ macro_rules! header {
                 values: &mut $crate::http::header::ValueIter<$crate::http::header::HeaderValue>,
             ) -> ::std::result::Result<::std::option::Option<$id>, $crate::Error>
             {
-                let values = match $crate::parsing::parse_comma_delimited(values)? {
-                    ::std::option::Option::Some(values) => values,
-                    ::std::option::Option::None => return Ok(::std::option::Option::None),
-                };
-
-                if values.is_empty() {
-                    ::std::result::Result::Err($crate::Error::empty_list())
-                } else {
-                    ::std::result::Result::Ok(::std::option::Option::Some($id(values)))
-                }
+                $crate::parsing::parse_comma_delimited(values, Some(1), None).map(|r| r.map($id))
             }
 
             #[inline]
@@ -38,7 +29,7 @@ macro_rules! header {
                 values: &mut $crate::ToValues,
             ) -> ::std::result::Result<(), $crate::Error>
             {
-                $crate::parsing::encode_comma_delimited(&self.0, values)
+                $crate::parsing::encode_comma_delimited(&self.0, values, Some(1), None)
             }
         }
     };
