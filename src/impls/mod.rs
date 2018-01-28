@@ -1,9 +1,41 @@
+pub use impls::accept_encoding::*;
 pub use impls::content_coding::*;
 pub use impls::content_encoding::*;
 pub use impls::content_length::*;
 pub use impls::host::*;
+pub use impls::quality::*;
 
 macro_rules! header {
+    // #rule
+    ($(#[$a:meta])*($id:ident, $n:expr) => ($item:ty)*) => {
+        $(#[$a])*
+        #[derive(Clone, Debug, PartialEq)]
+        pub struct $id(pub ::std::vec::Vec<$item>);
+        header!(@deref $id => Vec<$item>);
+        impl $crate::Header for $id {
+            #[inline]
+            fn name() -> &'static $crate::http::header::HeaderName {
+                &$n
+            }
+
+            #[inline]
+            fn parse(
+                values: &mut $crate::http::header::ValueIter<$crate::http::header::HeaderValue>,
+            ) -> ::std::result::Result<::std::option::Option<$id>, $crate::Error>
+            {
+                $crate::parsing::parse_comma_delimited(values, None, None).map(|r| r.map($id))
+            }
+
+            #[inline]
+            fn to_values(
+                &self,
+                values: &mut $crate::ToValues,
+            ) -> ::std::result::Result<(), $crate::Error>
+            {
+                $crate::parsing::encode_comma_delimited(&self.0, values, None, None)
+            }
+        }
+    };
     // 1#rule
     ($(#[$a:meta])*($id:ident, $n:expr) => ($item:ty)+) => {
         $(#[$a])*
@@ -83,7 +115,9 @@ macro_rules! header {
     };
 }
 
+mod accept_encoding;
 mod content_coding;
 mod content_encoding;
 mod content_length;
 mod host;
+mod quality;
