@@ -1,5 +1,6 @@
 use bytes::BytesMut;
 use http::header::{self, HeaderValue};
+use std::error;
 use std::fmt::{self, Write};
 use std::str::FromStr;
 
@@ -9,11 +10,12 @@ pub fn parse_single_value<T>(
     values: &mut header::ValueIter<HeaderValue>,
 ) -> Result<Option<T>, Error>
 where
-    T: FromStr<Err = Error>,
+    T: FromStr,
+    T::Err: Into<Box<error::Error + Sync + Send>>,
 {
     match values.next() {
         Some(value) => {
-            let value = value.to_str().map_err(Error::new)?.trim().parse()?;
+            let value = value.to_str().map_err(Error::new)?.trim().parse().map_err(Error::new)?;
             Ok(Some(value))
         }
         None => Ok(None),
@@ -37,7 +39,8 @@ pub fn parse_comma_delimited<T>(
     max: Option<usize>,
 ) -> Result<Option<Vec<T>>, Error>
 where
-    T: FromStr<Err = Error>,
+    T: FromStr,
+    T::Err: Into<Box<error::Error + Sync + Send>>,
 {
     let mut out = vec![];
     let mut empty = true;
@@ -51,7 +54,7 @@ where
                 continue;
             }
 
-            let elem = elem.parse()?;
+            let elem = elem.parse().map_err(Error::new)?;
             out.push(elem);
         }
     }

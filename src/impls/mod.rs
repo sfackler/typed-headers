@@ -1,3 +1,4 @@
+pub use impls::accept::*;
 pub use impls::accept_encoding::*;
 pub use impls::content_coding::*;
 pub use impls::content_encoding::*;
@@ -115,6 +116,7 @@ macro_rules! header {
     };
 }
 
+mod accept;
 mod accept_encoding;
 mod content_coding;
 mod content_encoding;

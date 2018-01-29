@@ -1,7 +1,6 @@
 use std::fmt;
 use std::str::FromStr;
-
-use Error;
+use void::Void;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum Inner {
@@ -67,10 +66,10 @@ impl fmt::Display for ContentCoding {
 }
 
 impl FromStr for ContentCoding {
-    type Err = Error;
+    type Err = Void;
 
     #[inline]
-    fn from_str(s: &str) -> Result<ContentCoding, Error> {
+    fn from_str(s: &str) -> Result<ContentCoding, Void> {
         Ok(ContentCoding::new(s))
     }
 }

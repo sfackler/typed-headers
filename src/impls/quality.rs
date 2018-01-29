@@ -2,8 +2,6 @@ use std::fmt;
 use std::slice;
 use std::str::{self, FromStr};
 
-use Error;
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct QualityItem<T> {
     pub item: T,
@@ -37,11 +35,11 @@ where
 
 impl<T> FromStr for QualityItem<T>
 where
-    T: FromStr<Err = Error>,
+    T: FromStr,
 {
-    type Err = Error;
+    type Err = T::Err;
 
-    fn from_str(mut s: &str) -> Result<QualityItem<T>, Error> {
+    fn from_str(mut s: &str) -> Result<QualityItem<T>, T::Err> {
         let quality = match WeightParser::parse(s) {
             Some((remaining, quality)) => {
                 s = &s[..remaining];
