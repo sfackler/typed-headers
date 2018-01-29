@@ -12,7 +12,7 @@ use std::mem;
 pub use impls::*;
 
 mod impls;
-pub mod parsing;
+pub mod util;
 
 pub trait Header {
     /// Returns the name of this header.

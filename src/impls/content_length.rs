@@ -1,7 +1,7 @@
 use http::header::{self, HeaderName, HeaderValue, CONTENT_LENGTH};
 use std::ops::{Deref, DerefMut};
 
-use {parsing, Error, Header, ToValues};
+use {util, Error, Header, ToValues};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ContentLength(pub u64);
@@ -63,6 +63,6 @@ impl Header for ContentLength {
 
     #[inline]
     fn to_values(&self, values: &mut ToValues) -> Result<(), Error> {
-        parsing::encode_single_value(&self.0, values)
+        util::encode_single_value(&self.0, values)
     }
 }

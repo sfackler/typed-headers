@@ -24,7 +24,7 @@ macro_rules! header {
                 values: &mut $crate::http::header::ValueIter<$crate::http::header::HeaderValue>,
             ) -> ::std::result::Result<::std::option::Option<$id>, $crate::Error>
             {
-                $crate::parsing::parse_comma_delimited(values, None, None).map(|r| r.map($id))
+                $crate::util::parse_comma_delimited(values, None, None).map(|r| r.map($id))
             }
 
             #[inline]
@@ -33,7 +33,7 @@ macro_rules! header {
                 values: &mut $crate::ToValues,
             ) -> ::std::result::Result<(), $crate::Error>
             {
-                $crate::parsing::encode_comma_delimited(&self.0, values, None, None)
+                $crate::util::encode_comma_delimited(&self.0, values, None, None)
             }
         }
     };
@@ -54,7 +54,7 @@ macro_rules! header {
                 values: &mut $crate::http::header::ValueIter<$crate::http::header::HeaderValue>,
             ) -> ::std::result::Result<::std::option::Option<$id>, $crate::Error>
             {
-                $crate::parsing::parse_comma_delimited(values, Some(1), None).map(|r| r.map($id))
+                $crate::util::parse_comma_delimited(values, Some(1), None).map(|r| r.map($id))
             }
 
             #[inline]
@@ -63,7 +63,7 @@ macro_rules! header {
                 values: &mut $crate::ToValues,
             ) -> ::std::result::Result<(), $crate::Error>
             {
-                $crate::parsing::encode_comma_delimited(&self.0, values, Some(1), None)
+                $crate::util::encode_comma_delimited(&self.0, values, Some(1), None)
             }
         }
     };
@@ -84,7 +84,7 @@ macro_rules! header {
                 values: &mut $crate::http::header::ValueIter<$crate::http::header::HeaderValue>,
             ) -> ::std::result::Result<::std::option::Option<$id>, $crate::Error>
             {
-                $crate::parsing::parse_single_value(values).map(|r| r.map($id))
+                $crate::util::parse_single_value(values).map(|r| r.map($id))
             }
 
             #[inline]
@@ -93,7 +93,7 @@ macro_rules! header {
                 values: &mut $crate::ToValues,
             ) -> ::std::result::Result<(), $crate::Error>
             {
-                $crate::parsing::encode_single_value(&self.0, values)
+                $crate::util::encode_single_value(&self.0, values)
             }
         }
     };

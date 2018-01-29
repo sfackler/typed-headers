@@ -8,6 +8,12 @@ pub struct QualityItem<T> {
     pub quality: Quality,
 }
 
+impl<T> QualityItem<T> {
+    pub fn new(item: T, quality: Quality) -> QualityItem<T> {
+        QualityItem { item, quality }
+    }
+}
+
 impl<T> fmt::Display for QualityItem<T>
 where
     T: fmt::Display,
@@ -16,9 +22,9 @@ where
         fmt::Display::fmt(&self.item, fmt)?;
         match self.quality.0 {
             1000 => Ok(()),
-            0 => fmt.write_str(";q=0"),
+            0 => fmt.write_str("; q=0"),
             mut x => {
-                fmt.write_str(";q=0.")?;
+                fmt.write_str("; q=0.")?;
                 let mut digits = *b"000";
                 digits[2] = (x % 10) as u8 + b'0';
                 x /= 10;
@@ -142,11 +148,19 @@ impl<'a> WeightParser<'a> {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Quality(u16);
+
+impl Quality {
+    pub fn from_u16(quality: u16) -> Quality {
+        assert!(quality <= 1000);
+        Quality(quality)
+    }
+}
 
 #[cfg(test)]
 mod test {
+    use Error;
     use super::*;
 
     #[derive(Debug, Clone, PartialEq)]
@@ -180,44 +194,44 @@ mod test {
     #[test]
     fn parse_ok() {
         assert_eq!(qitem(1000), "item".parse().unwrap());
-        assert_eq!(qitem(1000), "item;q=1".parse().unwrap());
-        assert_eq!(qitem(1000), "item;Q=1".parse().unwrap());
-        assert_eq!(qitem(1000), "item ; q=1".parse().unwrap());
-        assert_eq!(qitem(1000), "item;q=1.".parse().unwrap());
-        assert_eq!(qitem(1000), "item;q=1.0".parse().unwrap());
-        assert_eq!(qitem(1000), "item;q=1.00".parse().unwrap());
-        assert_eq!(qitem(1000), "item;q=1.000".parse().unwrap());
+        assert_eq!(qitem(1000), "item; q=1".parse().unwrap());
+        assert_eq!(qitem(1000), "item; Q=1".parse().unwrap());
+        assert_eq!(qitem(1000), "item ;q=1".parse().unwrap());
+        assert_eq!(qitem(1000), "item; q=1.".parse().unwrap());
+        assert_eq!(qitem(1000), "item; q=1.0".parse().unwrap());
+        assert_eq!(qitem(1000), "item; q=1.00".parse().unwrap());
+        assert_eq!(qitem(1000), "item; q=1.000".parse().unwrap());
 
-        assert_eq!(qitem(0), "item;q=0".parse().unwrap());
-        assert_eq!(qitem(0), "item;q=0.".parse().unwrap());
-        assert_eq!(qitem(0), "item;q=0.0".parse().unwrap());
-        assert_eq!(qitem(0), "item;q=0.00".parse().unwrap());
-        assert_eq!(qitem(0), "item;q=0.000".parse().unwrap());
+        assert_eq!(qitem(0), "item; q=0".parse().unwrap());
+        assert_eq!(qitem(0), "item; q=0.".parse().unwrap());
+        assert_eq!(qitem(0), "item; q=0.0".parse().unwrap());
+        assert_eq!(qitem(0), "item; q=0.00".parse().unwrap());
+        assert_eq!(qitem(0), "item; q=0.000".parse().unwrap());
 
-        assert_eq!(qitem(100), "item;q=0.1".parse().unwrap());
-        assert_eq!(qitem(100), "item;q=0.10".parse().unwrap());
-        assert_eq!(qitem(100), "item;q=0.100".parse().unwrap());
-        assert_eq!(qitem(120), "item;q=0.12".parse().unwrap());
-        assert_eq!(qitem(120), "item;q=0.120".parse().unwrap());
-        assert_eq!(qitem(123), "item;q=0.123".parse().unwrap());
+        assert_eq!(qitem(100), "item; q=0.1".parse().unwrap());
+        assert_eq!(qitem(100), "item; q=0.10".parse().unwrap());
+        assert_eq!(qitem(100), "item; q=0.100".parse().unwrap());
+        assert_eq!(qitem(120), "item; q=0.12".parse().unwrap());
+        assert_eq!(qitem(120), "item; q=0.120".parse().unwrap());
+        assert_eq!(qitem(123), "item; q=0.123".parse().unwrap());
     }
 
     #[test]
     fn parse_err() {
-        assert!("item;q=".parse::<QualityItem<Item>>().is_err());
-        assert!("item;q=.1".parse::<QualityItem<Item>>().is_err());
-        assert!("item;q=1.1".parse::<QualityItem<Item>>().is_err());
-        assert!("item;q=1.01".parse::<QualityItem<Item>>().is_err());
-        assert!("item;q=1.001".parse::<QualityItem<Item>>().is_err());
-        assert!("item;q=0.0001".parse::<QualityItem<Item>>().is_err());
+        assert!("item; q=".parse::<QualityItem<Item>>().is_err());
+        assert!("item; q=.1".parse::<QualityItem<Item>>().is_err());
+        assert!("item; q=1.1".parse::<QualityItem<Item>>().is_err());
+        assert!("item; q=1.01".parse::<QualityItem<Item>>().is_err());
+        assert!("item; q=1.001".parse::<QualityItem<Item>>().is_err());
+        assert!("item; q=0.0001".parse::<QualityItem<Item>>().is_err());
     }
 
     #[test]
     fn display() {
         assert_eq!(qitem(1000).to_string(), "item");
-        assert_eq!(qitem(0).to_string(), "item;q=0");
-        assert_eq!(qitem(1).to_string(), "item;q=0.001");
-        assert_eq!(qitem(10).to_string(), "item;q=0.01");
-        assert_eq!(qitem(100).to_string(), "item;q=0.1");
+        assert_eq!(qitem(0).to_string(), "item; q=0");
+        assert_eq!(qitem(1).to_string(), "item; q=0.001");
+        assert_eq!(qitem(10).to_string(), "item; q=0.01");
+        assert_eq!(qitem(100).to_string(), "item; q=0.1");
     }
 }
