@@ -1,6 +1,8 @@
 use std::fmt;
+use std::error;
 use std::str::FromStr;
-use void::Void;
+
+use util;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum Inner {
@@ -26,24 +28,27 @@ impl ContentCoding {
 
     pub const IDENTITY: ContentCoding = ContentCoding(Inner::Identity);
 
-    pub fn new(encoding: &str) -> ContentCoding {
+    pub fn new(encoding: &str) -> Result<ContentCoding, InvalidContentCoding> {
         if encoding.eq_ignore_ascii_case("br") {
-            ContentCoding::BROTLI
+            Ok(ContentCoding::BROTLI)
         } else if encoding.eq_ignore_ascii_case("gzip") {
-            ContentCoding::GZIP
+            Ok(ContentCoding::GZIP)
         } else if encoding.eq_ignore_ascii_case("x-gzip") {
-            ContentCoding::GZIP
+            Ok(ContentCoding::GZIP)
         } else if encoding.eq_ignore_ascii_case("deflate") {
-            ContentCoding::DEFLATE
+            Ok(ContentCoding::DEFLATE)
         } else if encoding.eq_ignore_ascii_case("compress") {
-            ContentCoding::COMPRESS
+            Ok(ContentCoding::COMPRESS)
         } else if encoding.eq_ignore_ascii_case("x-compress") {
-            ContentCoding::COMPRESS
+            Ok(ContentCoding::COMPRESS)
         } else if encoding.eq_ignore_ascii_case("identity") {
-            ContentCoding::IDENTITY
+            Ok(ContentCoding::IDENTITY)
         } else {
-            // FIXME check for invalid characters?
-            ContentCoding(Inner::Other(encoding.to_ascii_lowercase()))
+            if util::is_token(encoding) {
+                Ok(ContentCoding(Inner::Other(encoding.to_ascii_lowercase())))
+            } else {
+                Err(InvalidContentCoding(()))
+            }
         }
     }
 
@@ -66,10 +71,25 @@ impl fmt::Display for ContentCoding {
 }
 
 impl FromStr for ContentCoding {
-    type Err = Void;
+    type Err = InvalidContentCoding;
 
     #[inline]
-    fn from_str(s: &str) -> Result<ContentCoding, Void> {
-        Ok(ContentCoding::new(s))
+    fn from_str(s: &str) -> Result<ContentCoding, InvalidContentCoding> {
+        ContentCoding::new(s)
+    }
+}
+
+#[derive(Debug)]
+pub struct InvalidContentCoding(());
+
+impl fmt::Display for InvalidContentCoding {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        fmt.write_str("invalid content-coding")
+    }
+}
+
+impl error::Error for InvalidContentCoding {
+    fn description(&self) -> &str {
+        "invalid content-coding"
     }
 }

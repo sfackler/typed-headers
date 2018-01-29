@@ -1,6 +1,5 @@
 extern crate bytes;
 extern crate mime;
-extern crate void;
 
 pub extern crate http;
 

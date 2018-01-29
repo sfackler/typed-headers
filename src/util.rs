@@ -6,6 +6,30 @@ use std::str::FromStr;
 
 use {Error, Header, HeaderMapExt, ToValues};
 
+pub fn is_token(s: &str) -> bool {
+    s.as_bytes().iter().all(|b| match *b {
+        b'a'...b'z'
+        | b'A'...b'Z'
+        | b'0'...b'9'
+        | b'!'
+        | b'#'
+        | b'$'
+        | b'%'
+        | b'&'
+        | b'\''
+        | b'*'
+        | b'+'
+        | b'-'
+        | b'.'
+        | b'^'
+        | b'_'
+        | b'`'
+        | b'|'
+        | b'~' => true,
+        _ => false,
+    })
+}
+
 pub fn parse_single_value<T>(
     values: &mut header::ValueIter<HeaderValue>,
 ) -> Result<Option<T>, Error>
