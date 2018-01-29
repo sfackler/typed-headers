@@ -1,5 +1,7 @@
 pub use impls::accept::*;
+pub use impls::accept_charset::*;
 pub use impls::accept_encoding::*;
+pub use impls::charset::*;
 pub use impls::content_coding::*;
 pub use impls::content_encoding::*;
 pub use impls::content_length::*;
@@ -117,7 +119,9 @@ macro_rules! header {
 }
 
 mod accept;
+mod accept_charset;
 mod accept_encoding;
+mod charset;
 mod content_coding;
 mod content_encoding;
 mod content_length;
