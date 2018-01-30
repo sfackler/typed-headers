@@ -1,6 +1,7 @@
+use bytes::BytesMut;
 use http::header::{self, HeaderName, HeaderValue, HOST};
 use std::error;
-use std::fmt;
+use std::fmt::{self, Write};
 use std::str::FromStr;
 
 use {util, Error, Header, ToValues};
@@ -13,6 +14,7 @@ pub struct Host {
 impl Host {
     pub fn new(hostname: &str, port: Option<u16>) -> Host {
         Host {
+            // FIXME validate syntax
             hostname: hostname.to_string(),
             port,
         }
@@ -38,10 +40,16 @@ impl Header for Host {
 
     fn to_values(&self, values: &mut ToValues) -> Result<(), Error> {
         let value = match self.port {
-            None | Some(80) | Some(443) => HeaderValue::from_str(&self.hostname),
-            Some(port) => HeaderValue::from_str(&format!("{}:{}", self.hostname, port)),
+            None | Some(80) | Some(443) => {
+                HeaderValue::from_str(&self.hostname).map_err(Error::new)?
+            }
+            Some(port) => {
+                let mut buf = BytesMut::new();
+                write!(buf, "{}:{}", self.hostname, port).unwrap();
+                HeaderValue::from_shared(buf.freeze()).map_err(Error::new)?
+            }
         };
-        values.append(value.map_err(Error::new)?);
+        values.append(value);
         Ok(())
     }
 }
