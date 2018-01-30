@@ -1,12 +1,14 @@
 pub use impls::accept::*;
 pub use impls::accept_charset::*;
 pub use impls::accept_encoding::*;
+pub use impls::accept_ranges::*;
 pub use impls::charset::*;
 pub use impls::content_coding::*;
 pub use impls::content_encoding::*;
 pub use impls::content_length::*;
 pub use impls::host::*;
 pub use impls::quality::*;
+pub use impls::range_unit::*;
 
 macro_rules! header {
     // #rule
@@ -121,9 +123,11 @@ macro_rules! header {
 mod accept;
 mod accept_charset;
 mod accept_encoding;
+mod accept_ranges;
 mod charset;
 mod content_coding;
 mod content_encoding;
 mod content_length;
 mod host;
 mod quality;
+mod range_unit;
