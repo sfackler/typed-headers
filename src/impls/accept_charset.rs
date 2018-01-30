@@ -1,6 +1,6 @@
 use http::header::ACCEPT_CHARSET;
 
-use {QualityItem, Charset};
+use {Charset, QualityItem};
 
 header! {
     (AcceptCharset, ACCEPT_CHARSET) => (QualityItem<Charset>)+
@@ -20,7 +20,7 @@ mod test {
                 QualityItem::new(Charset::ISO_8859_5, Quality::from_u16(1000)),
                 QualityItem::new(Charset::new("unicode-1-1").unwrap(), Quality::from_u16(800)),
             ]),
-            &["iso-8859-5, unicode-1-1; q=0.8"]
+            &["iso-8859-5, unicode-1-1; q=0.8"],
         );
     }
 }
