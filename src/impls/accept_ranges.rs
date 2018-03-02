@@ -6,7 +6,7 @@ header! {
 
 token! {
     RangeUnit, InvalidRangeUnit => {
-        BYTES => "bytes",
-        NONE => "none",
+        BYTES => "bytes" => [],
+        NONE => "none" => [],
     }
 }

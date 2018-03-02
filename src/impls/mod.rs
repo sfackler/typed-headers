@@ -122,7 +122,7 @@ macro_rules! header {
 }
 
 macro_rules! token {
-    ($name:ident, $error:ident => { $($variant:ident => $s:expr,)* }) => {
+    ($name:ident, $error:ident => { $($variant:ident => $s:expr => [$($alias:expr),*],)* }) => {
         #[derive(Debug, Clone)]
         #[allow(non_camel_case_types)]
         enum Inner {
@@ -159,6 +159,12 @@ macro_rules! token {
                     if s.eq_ignore_ascii_case($s) {
                         return Ok($name(Inner::$variant));
                     }
+
+                    $(
+                        if s.eq_ignore_ascii_case($alias) {
+                            return Ok($name(Inner::$variant));
+                        }
+                    )*
                 )*
 
                 if $crate::util::is_token(s) {
