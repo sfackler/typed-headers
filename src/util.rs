@@ -7,6 +7,10 @@ use std::str::FromStr;
 use {Error, Header, HeaderMapExt, ToValues};
 
 pub fn is_token(s: &str) -> bool {
+    if s.is_empty() {
+        return false;
+    }
+
     s.as_bytes().iter().all(|b| match *b {
         b'a'...b'z'
         | b'A'...b'Z'

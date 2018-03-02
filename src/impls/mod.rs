@@ -10,7 +10,6 @@ pub use impls::content_length::*;
 pub use impls::content_type::*;
 pub use impls::host::*;
 pub use impls::quality::*;
-pub use impls::range_unit::*;
 
 macro_rules! header {
     // #rule
@@ -122,6 +121,94 @@ macro_rules! header {
     };
 }
 
+macro_rules! token {
+    ($name:ident, $error:ident => { $($variant:ident => $s:expr,)* }) => {
+        #[derive(Debug, Clone)]
+        #[allow(non_camel_case_types)]
+        enum Inner {
+            $(
+                $variant,
+            )*
+            Other(String),
+        }
+
+        #[derive(Debug, Clone)]
+        pub struct $name(Inner);
+
+        impl PartialEq for $name {
+            fn eq(&self, other: &$name) -> bool {
+                match (&self.0, &other.0) {
+                    $(
+                        (&Inner::$variant, &Inner::$variant) => true,
+                    )*
+                    (&Inner::Other(ref a), &Inner::Other(ref b)) => a.eq_ignore_ascii_case(b),
+                    _ => false,
+                }
+            }
+        }
+
+        impl Eq for $name {}
+
+        impl $name {
+            $(
+                pub const $variant: $name = $name(Inner::$variant);
+            )*
+
+            pub fn new(s: &str) -> ::std::result::Result<$name, $error> {
+                $(
+                    if s.eq_ignore_ascii_case($s) {
+                        return Ok($name(Inner::$variant));
+                    }
+                )*
+
+                if $crate::util::is_token(s) {
+                    Ok($name(Inner::Other(s.to_string())))
+                } else {
+                    Err($error(()))
+                }
+            }
+
+            pub fn as_str(&self) -> &str {
+                match self.0 {
+                    $(
+                        Inner::$variant => $s,
+                    )*
+                    Inner::Other(ref s) => s,
+                }
+            }
+        }
+
+        impl ::std::fmt::Display for $name {
+            fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+                fmt.write_str(self.as_str())
+            }
+        }
+
+        impl ::std::str::FromStr for $name {
+            type Err = $error;
+
+            fn from_str(s: &str) -> ::std::result::Result<$name, $error> {
+                $name::new(s)
+            }
+        }
+
+        #[derive(Debug)]
+        pub struct $error(());
+
+        impl ::std::fmt::Display for $error {
+            fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+                fmt.write_str("invalid token")
+            }
+        }
+
+        impl ::std::error::Error for $error {
+            fn description(&self) -> &str {
+                "invalid token"
+            }
+        }
+    }
+}
+
 mod accept;
 mod accept_charset;
 mod accept_encoding;
@@ -134,4 +221,3 @@ mod content_length;
 mod content_type;
 mod host;
 mod quality;
-mod range_unit;
