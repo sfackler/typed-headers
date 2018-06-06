@@ -45,10 +45,10 @@ where
         Some(value) => {
             let value = value
                 .to_str()
-                .map_err(Error::new)?
+                .map_err(Error::custom)?
                 .trim()
                 .parse()
-                .map_err(Error::new)?;
+                .map_err(Error::custom)?;
             Ok(Some(value))
         }
         None => Ok(None),
@@ -61,7 +61,7 @@ where
 {
     let mut buf = BytesMut::new();
     write!(buf, "{}", value).unwrap();
-    let value = HeaderValue::from_shared(buf.freeze()).map_err(Error::new)?;
+    let value = HeaderValue::from_shared(buf.freeze()).map_err(Error::custom)?;
     values.append(value);
     Ok(())
 }
@@ -80,14 +80,14 @@ where
     for value in values {
         empty = false;
 
-        let value = value.to_str().map_err(Error::new)?;
+        let value = value.to_str().map_err(Error::custom)?;
         for elem in value.split(',') {
             let elem = elem.trim();
             if elem.is_empty() {
                 continue;
             }
 
-            let elem = elem.parse().map_err(Error::new)?;
+            let elem = elem.parse().map_err(Error::custom)?;
             out.push(elem);
         }
     }
@@ -97,7 +97,7 @@ where
     } else {
         if let Some(min) = min {
             if out.len() < min {
-                return Err(Error::new(format!(
+                return Err(Error::custom(format!(
                     "expected at least {} values, but got {}",
                     min,
                     out.len()
@@ -106,7 +106,7 @@ where
         }
         if let Some(max) = max {
             if out.len() > max {
-                return Err(Error::new(format!(
+                return Err(Error::custom(format!(
                     "expected at most {} values, but got {}",
                     max,
                     out.len()
@@ -141,7 +141,7 @@ where
     }
     if let Some(min) = min {
         if count < min {
-            return Err(Error::new(format!(
+            return Err(Error::custom(format!(
                 "expected at least {} values, but got {}",
                 min, count
             )));
@@ -149,19 +149,19 @@ where
     }
     if let Some(max) = max {
         if count > max {
-            return Err(Error::new(format!(
+            return Err(Error::custom(format!(
                 "expected at most {} values, but got {}",
                 max, count
             )));
         }
     }
     if count != 0 && out.as_bytes().iter().filter(|&&b| b == b',').count() != count - 1 {
-        return Err(Error::new("values contained internal `,` characters"));
+        return Err(Error::custom("values contained internal `,` characters"));
     }
     if out.contains(",,") {
-        return Err(Error::new("empty values are not permitted"));
+        return Err(Error::custom("empty values are not permitted"));
     }
-    let value = HeaderValue::from_str(&out).map_err(Error::new)?;
+    let value = HeaderValue::from_str(&out).map_err(Error::custom)?;
     values.append(value);
     Ok(())
 }

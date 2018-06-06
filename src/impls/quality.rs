@@ -197,7 +197,7 @@ mod test {
             if s == "item" {
                 Ok(Item)
             } else {
-                Err(Error::new("wrong"))
+                Err(Error::custom("wrong"))
             }
         }
     }

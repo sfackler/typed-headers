@@ -1,3 +1,5 @@
+//! Typed HTTP header serialization and deserialization supported.
+
 extern crate bytes;
 extern crate mime;
 
@@ -39,31 +41,33 @@ pub trait Header {
     fn to_values(&self, values: &mut ToValues) -> Result<(), Error>;
 }
 
+/// An error serializing or deserializing a header.
 #[derive(Debug)]
-pub struct Error(());
+pub struct Error(Box<error::Error + Sync + Send>);
 
 impl Error {
-    pub fn new<E>(_: E) -> Error
+    /// Creates a new error with the provided cause.
+    pub fn custom<E>(e: E) -> Error
     where
         E: Into<Box<error::Error + Sync + Send>>,
     {
-        Error(())
+        Error(e.into())
     }
 
     fn too_many_values() -> Error {
-        Error(())
+        Error::custom("too many header values")
     }
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        fmt.write_str("parse error")
+        fmt::Display::fmt(&self.0, fmt)
     }
 }
 
 impl error::Error for Error {
     fn description(&self) -> &str {
-        "parse error"
+        error::Error::description(&*self.0)
     }
 }
 
@@ -93,6 +97,7 @@ impl<'a> ToValues<'a> {
     }
 }
 
+/// An extension trait adding typed getters and setters to `HeaderMap`.
 pub trait HeaderMapExt {
     /// Retrieves the specified header from the map, if present.
     fn typed_get<H>(&self) -> Result<Option<H>, Error>
