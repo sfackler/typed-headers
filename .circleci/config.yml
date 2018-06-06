@@ -32,6 +32,5 @@ jobs:
       - *SAVE_REGISTRY
       - run: rustc --version > ~/rust-version
       - *RESTORE_DEPS
-      - run: cargo test --all
-      - run: cargo test --all --all-features
+      - run: cargo test
       - *SAVE_DEPS
