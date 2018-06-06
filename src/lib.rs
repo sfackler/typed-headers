@@ -1,9 +1,9 @@
 //! Typed HTTP header serialization and deserialization supported.
 
 extern crate bytes;
-extern crate mime;
 
 pub extern crate http;
+pub extern crate mime;
 
 use http::header::{self, HeaderMap, HeaderName, HeaderValue};
 use std::error;
