@@ -102,7 +102,7 @@ pub trait HeaderMapExt {
     /// Inserts the provided header into the map.
     ///
     /// This overwrites any existing entries for that header.
-    fn typed_set<H>(&mut self, header: &H) -> Result<(), Error>
+    fn typed_insert<H>(&mut self, header: &H) -> Result<(), Error>
     where
         H: Header;
 }
@@ -122,7 +122,7 @@ impl HeaderMapExt for HeaderMap {
         }
     }
 
-    fn typed_set<H>(&mut self, header: &H) -> Result<(), Error>
+    fn typed_insert<H>(&mut self, header: &H) -> Result<(), Error>
     where
         H: Header,
     {

@@ -185,7 +185,7 @@ where
     H: Header,
 {
     let mut map = HeaderMap::new();
-    map.typed_set(header).unwrap();
+    map.typed_insert(header).unwrap();
 
     let values = map.get_all(H::name()).iter().collect::<Vec<_>>();
     assert_eq!(values.len(), expected.len());
@@ -199,7 +199,7 @@ where
     H: Header + PartialEq + fmt::Debug,
 {
     let mut map = HeaderMap::new();
-    map.typed_set(header).unwrap();
+    map.typed_insert(header).unwrap();
 
     let values = map.get_all(H::name()).iter().collect::<Vec<_>>();
     assert_eq!(values.len(), expected.len());

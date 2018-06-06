@@ -7,6 +7,3 @@ authors = ["Steven Fackler <sfackler@gmail.com>"]
 bytes = "0.4"
 http = "0.1"
 mime = "0.3"
-
-[patch.crates-io]
-http = { git = "https://github.com/sfackler/http", branch = "method-from-str" }
