@@ -174,6 +174,11 @@ impl Quality {
         assert!(quality <= 1000);
         Quality(quality)
     }
+
+    /// Returns the quality multiplied by 1000 as an integer.
+    pub fn as_u16(&self) -> u16 {
+        self.0
+    }
 }
 
 #[cfg(test)]
