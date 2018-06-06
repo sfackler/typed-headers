@@ -2,6 +2,11 @@ use std::fmt;
 use std::slice;
 use std::str::{self, FromStr};
 
+/// A value paired with its "quality" as defined in [RFC7231].
+///
+/// Quality items are used in content negotiation headers such as `Accept` and `Accept-Encoding`.
+///
+/// [RFC7231]: https://tools.ietf.org/html/rfc7231#section-5.3
 #[derive(Debug, Clone, PartialEq)]
 pub struct QualityItem<T> {
     pub item: T,
@@ -9,6 +14,7 @@ pub struct QualityItem<T> {
 }
 
 impl<T> QualityItem<T> {
+    /// Creates a new quality item.
     pub fn new(item: T, quality: Quality) -> QualityItem<T> {
         QualityItem { item, quality }
     }
@@ -148,10 +154,22 @@ impl<'a> WeightParser<'a> {
     }
 }
 
+/// A quality value, as specified in [RFC7231].
+///
+/// Quality values are decimal numbers between 0 and 1 (inclusive) with up to 3 fractional digits of precision.
+///
+/// [RFC7231]: https://tools.ietf.org/html/rfc7231#section-5.3.1
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Quality(u16);
 
 impl Quality {
+    /// Creates a quality value from a value between 0 and 1000 inclusive.
+    ///
+    /// This is semantically divided by 1000 to produce a value between 0 and 1.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the value is greater than 1000.
     pub fn from_u16(quality: u16) -> Quality {
         assert!(quality <= 1000);
         Quality(quality)
@@ -160,8 +178,8 @@ impl Quality {
 
 #[cfg(test)]
 mod test {
-    use Error;
     use super::*;
+    use Error;
 
     #[derive(Debug, Clone, PartialEq)]
     struct Item;

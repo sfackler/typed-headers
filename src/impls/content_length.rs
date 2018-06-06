@@ -3,6 +3,27 @@ use std::ops::{Deref, DerefMut};
 
 use {util, Error, Header, ToValues};
 
+/// `Content-Length` header, defined in
+/// [RFC7230](http://tools.ietf.org/html/rfc7230#section-3.3.2)
+///
+/// When a message does not have a `Transfer-Encoding` header field, a
+/// Content-Length header field can provide the anticipated size, as a
+/// decimal number of octets, for a potential payload body.  For messages
+/// that do include a payload body, the Content-Length field-value
+/// provides the framing information necessary for determining where the
+/// body (and message) ends.  For messages that do not include a payload
+/// body, the Content-Length indicates the size of the selected
+/// representation.
+///
+/// # ABNF
+///
+/// ```text
+/// Content-Length = 1*DIGIT
+/// ```
+///
+/// # Example values
+///
+/// * `3495`
 #[derive(Clone, Debug, PartialEq)]
 pub struct ContentLength(pub u64);
 

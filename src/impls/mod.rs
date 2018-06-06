@@ -117,8 +117,15 @@ macro_rules! header {
 }
 
 macro_rules! token {
-    ($name:ident, $error:ident => { $($variant:ident => $s:expr => [$($alias:expr),*],)* }) => {
-        #[derive(Debug, Clone)]
+    (
+        $(#[$attr:meta])* $name:ident, $error:ident => {
+            $(
+                $(#[$variant_attr:meta])*
+                $variant:ident => $s:expr => [$($alias:expr),*],
+            )*
+        }
+    ) => {
+        #[derive(Debug, Clone, PartialEq, Eq)]
         #[allow(non_camel_case_types)]
         enum Inner {
             $(
@@ -127,28 +134,19 @@ macro_rules! token {
             Other(String),
         }
 
-        #[derive(Debug, Clone)]
+        $(#[$attr])*
+        #[derive(Debug, Clone, PartialEq, Eq)]
         pub struct $name(Inner);
-
-        impl PartialEq for $name {
-            fn eq(&self, other: &$name) -> bool {
-                match (&self.0, &other.0) {
-                    $(
-                        (&Inner::$variant, &Inner::$variant) => true,
-                    )*
-                    (&Inner::Other(ref a), &Inner::Other(ref b)) => a.eq_ignore_ascii_case(b),
-                    _ => false,
-                }
-            }
-        }
-
-        impl Eq for $name {}
 
         impl $name {
             $(
+                $(#[$variant_attr])*
                 pub const $variant: $name = $name(Inner::$variant);
             )*
 
+            /// Constructs a new instance of this value from a string.
+            /// 
+            /// An error is returned if the string is not a valid token.
             pub fn new(s: &str) -> ::std::result::Result<$name, $error> {
                 $(
                     if s.eq_ignore_ascii_case($s) {
@@ -163,12 +161,13 @@ macro_rules! token {
                 )*
 
                 if $crate::util::is_token(s) {
-                    Ok($name(Inner::Other(s.to_string())))
+                    Ok($name(Inner::Other(s.to_ascii_lowercase())))
                 } else {
                     Err($error(()))
                 }
             }
 
+            /// Returns the string representation of this token.
             pub fn as_str(&self) -> &str {
                 match self.0 {
                     $(
