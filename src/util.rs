@@ -1,4 +1,3 @@
-use bytes::BytesMut;
 use http::header::{self, HeaderMap, HeaderValue};
 use std::error;
 use std::fmt::{self, Write};
@@ -6,6 +5,7 @@ use std::str::FromStr;
 
 use {Error, Header, HeaderMapExt, ToValues};
 
+#[inline]
 pub fn is_token(s: &str) -> bool {
     if s.is_empty() {
         return false;
@@ -59,9 +59,8 @@ pub fn encode_single_value<T>(value: &T, values: &mut ToValues) -> Result<(), Er
 where
     T: fmt::Display,
 {
-    let mut buf = BytesMut::new();
-    write!(buf, "{}", value).unwrap();
-    let value = HeaderValue::from_shared(buf.freeze()).map_err(Error::custom)?;
+    let value = value.to_string();
+    let value = HeaderValue::from_str(&value).map_err(Error::custom)?;
     values.append(value);
     Ok(())
 }

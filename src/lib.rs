@@ -1,5 +1,6 @@
 //! Typed HTTP header serialization and deserialization supported.
 
+extern crate base64;
 extern crate bytes;
 
 pub extern crate http;

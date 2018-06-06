@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["Steven Fackler <sfackler@gmail.com>"]
 
 [dependencies]
+base64 = "0.9"
 bytes = "0.4"
 http = "0.1"
 mime = "0.3"

@@ -1,10 +1,15 @@
 pub use impls::accept::*;
 pub use impls::accept_encoding::*;
+pub use impls::auth_scheme::*;
+pub use impls::authorization::*;
 pub use impls::content_coding::*;
 pub use impls::content_encoding::*;
 pub use impls::content_length::*;
 pub use impls::content_type::*;
+pub use impls::credentials::*;
+pub use impls::proxy_authorization::*;
 pub use impls::quality::*;
+pub use impls::token68::*;
 
 macro_rules! header {
     // #rule
@@ -211,8 +216,13 @@ macro_rules! token {
 
 mod accept;
 mod accept_encoding;
+mod auth_scheme;
+mod authorization;
 mod content_coding;
 mod content_encoding;
 mod content_length;
 mod content_type;
+mod credentials;
+mod proxy_authorization;
 mod quality;
+mod token68;
