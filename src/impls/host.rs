@@ -25,6 +25,19 @@ pub struct Host {
 }
 
 impl Host {
+    /// Creates a Host header from a hostname and optional port.
+    #[inline]
+    pub fn new(host: &str, port: Option<u16>) -> Result<Host, Error> {
+        // go through authority to validate the hostname
+        let authority = match port {
+            Some(port) => Bytes::from(format!("{}:{}", host, port)),
+            None => Bytes::from(host),
+        };
+        let authority = Authority::from_shared(authority).map_err(Error::custom)?;
+
+        Ok(Host::from_authority(&authority))
+    }
+
     /// Creates a Host header from a URI authority component.
     ///
     /// The userinfo portion of the authority is not included in the header.
