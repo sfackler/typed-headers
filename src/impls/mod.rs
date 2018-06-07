@@ -1,15 +1,15 @@
-pub use impls::accept::*;
-pub use impls::accept_encoding::*;
-pub use impls::auth_scheme::*;
-pub use impls::authorization::*;
-pub use impls::content_coding::*;
-pub use impls::content_encoding::*;
-pub use impls::content_length::*;
-pub use impls::content_type::*;
-pub use impls::credentials::*;
-pub use impls::proxy_authorization::*;
-pub use impls::quality::*;
-pub use impls::token68::*;
+pub use impls::accept::Accept;
+pub use impls::accept_encoding::AcceptEncoding;
+pub use impls::auth_scheme::AuthScheme;
+pub use impls::authorization::Authorization;
+pub use impls::content_coding::ContentCoding;
+pub use impls::content_encoding::ContentEncoding;
+pub use impls::content_length::ContentLength;
+pub use impls::content_type::ContentType;
+pub use impls::credentials::Credentials;
+pub use impls::proxy_authorization::ProxyAuthorization;
+pub use impls::quality::{Quality, QualityItem};
+pub use impls::token68::Token68;
 
 macro_rules! header {
     // #rule
