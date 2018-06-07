@@ -7,6 +7,7 @@ pub use impls::content_encoding::ContentEncoding;
 pub use impls::content_length::ContentLength;
 pub use impls::content_type::ContentType;
 pub use impls::credentials::Credentials;
+pub use impls::host::Host;
 pub use impls::proxy_authorization::ProxyAuthorization;
 pub use impls::quality::{Quality, QualityItem};
 pub use impls::token68::Token68;
@@ -150,7 +151,7 @@ macro_rules! token {
             )*
 
             /// Constructs a new instance of this value from a string.
-            /// 
+            ///
             /// An error is returned if the string is not a valid token.
             pub fn new(s: &str) -> ::std::result::Result<$name, $error> {
                 $(
@@ -223,6 +224,7 @@ mod content_encoding;
 mod content_length;
 mod content_type;
 mod credentials;
+mod host;
 mod proxy_authorization;
 mod quality;
 mod token68;
