@@ -2,6 +2,7 @@
 
 extern crate base64;
 extern crate bytes;
+extern crate chrono;
 
 pub extern crate http;
 pub extern crate mime;

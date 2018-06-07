@@ -8,8 +8,10 @@ pub use impls::content_length::ContentLength;
 pub use impls::content_type::ContentType;
 pub use impls::credentials::Credentials;
 pub use impls::host::Host;
+pub use impls::http_date::HttpDate;
 pub use impls::proxy_authorization::ProxyAuthorization;
 pub use impls::quality::{Quality, QualityItem};
+pub use impls::retry_after::RetryAfter;
 pub use impls::token68::Token68;
 
 macro_rules! header {
@@ -225,6 +227,8 @@ mod content_length;
 mod content_type;
 mod credentials;
 mod host;
+mod http_date;
 mod proxy_authorization;
 mod quality;
+mod retry_after;
 mod token68;
