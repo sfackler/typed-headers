@@ -159,7 +159,7 @@ impl<'a> WeightParser<'a> {
 /// Quality values are decimal numbers between 0 and 1 (inclusive) with up to 3 fractional digits of precision.
 ///
 /// [RFC7231]: https://tools.ietf.org/html/rfc7231#section-5.3.1
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Quality(u16);
 
 impl Quality {
