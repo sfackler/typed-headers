@@ -32,14 +32,13 @@ impl Header for RetryAfter {
     }
 
     #[inline]
-    fn to_values(&self, values: &mut ToValues) -> Result<(), Error> {
+    fn to_values(&self, values: &mut ToValues) {
         let s = match *self {
             RetryAfter::DelaySeconds(delay) => delay.to_string(),
             RetryAfter::HttpDate(ref date) => date.to_string(),
         };
         let value = HeaderValue::from_str(&s).expect("retry-after should be valid");
         values.append(value);
-        Ok(())
     }
 }
 

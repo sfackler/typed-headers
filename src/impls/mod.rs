@@ -22,6 +22,7 @@ macro_rules! header {
         #[derive(Clone, Debug, PartialEq)]
         pub struct $id(pub ::std::vec::Vec<$item>);
         header!(@deref $id => Vec<$item>);
+        header!(@derefmut $id => Vec<$item>);
         impl $crate::Header for $id {
             #[inline]
             fn name() -> &'static $crate::http::header::HeaderName {
@@ -33,16 +34,12 @@ macro_rules! header {
                 values: &mut $crate::http::header::ValueIter<$crate::http::header::HeaderValue>,
             ) -> ::std::result::Result<::std::option::Option<$id>, $crate::Error>
             {
-                $crate::util::parse_comma_delimited(values, None, None).map(|r| r.map($id))
+                $crate::util::parse_comma_delimited(values).map(|r| r.map($id))
             }
 
             #[inline]
-            fn to_values(
-                &self,
-                values: &mut $crate::ToValues,
-            ) -> ::std::result::Result<(), $crate::Error>
-            {
-                $crate::util::encode_comma_delimited(&self.0, values, None, None)
+            fn to_values(&self, values: &mut $crate::ToValues) {
+                $crate::util::encode_comma_delimited(&self.0, values);
             }
         }
     };
@@ -52,6 +49,18 @@ macro_rules! header {
         #[derive(Clone, Debug, PartialEq)]
         pub struct $id(pub ::std::vec::Vec<$item>);
         header!(@deref $id => Vec<$item>);
+
+        impl $id {
+            #[inline]
+            pub fn new(values: Vec<$item>) -> ::std::result::Result<$id, $crate::Error> {
+                if values.is_empty() {
+                    Err($crate::Error::custom("expected some values"))
+                } else {
+                    Ok($id(values))
+                }
+            }
+        }
+
         impl $crate::Header for $id {
             #[inline]
             fn name() -> &'static $crate::http::header::HeaderName {
@@ -63,16 +72,22 @@ macro_rules! header {
                 values: &mut $crate::http::header::ValueIter<$crate::http::header::HeaderValue>,
             ) -> ::std::result::Result<::std::option::Option<$id>, $crate::Error>
             {
-                $crate::util::parse_comma_delimited(values, Some(1), None).map(|r| r.map($id))
+                match $crate::util::parse_comma_delimited(values)? {
+                    Some(values) => $id::new(values).map(Some),
+                    None => Ok(None),
+                }
             }
 
             #[inline]
-            fn to_values(
-                &self,
-                values: &mut $crate::ToValues,
-            ) -> ::std::result::Result<(), $crate::Error>
-            {
-                $crate::util::encode_comma_delimited(&self.0, values, Some(1), None)
+            fn to_values(&self, values: &mut $crate::ToValues) {
+                $crate::util::encode_comma_delimited(&self.0, values);
+            }
+        }
+
+        impl ::std::convert::From<$item> for $id {
+            #[inline]
+            fn from(value: $item) -> $id {
+                $id(vec![value])
             }
         }
     };
@@ -82,6 +97,7 @@ macro_rules! header {
         #[derive(Clone, Debug, PartialEq)]
         pub struct $id(pub $value);
         header!(@deref $id => $value);
+        header!(@derefmut  $id => $value);
         impl $crate::Header for $id {
             #[inline]
             fn name() -> &'static $crate::http::header::HeaderName {
@@ -97,12 +113,8 @@ macro_rules! header {
             }
 
             #[inline]
-            fn to_values(
-                &self,
-                values: &mut $crate::ToValues,
-            ) -> ::std::result::Result<(), $crate::Error>
-            {
-                $crate::util::encode_single_value(&self.0, values)
+            fn to_values(&self, values: &mut $crate::ToValues) {
+                $crate::util::encode_single_value(&self.0, values);
             }
         }
     };
@@ -115,7 +127,8 @@ macro_rules! header {
                 &self.0
             }
         }
-
+    };
+    (@derefmut $id:ident => $t:ty) => {
         impl ::std::ops::DerefMut for $id {
             #[inline]
             fn deref_mut(&mut self) -> &mut $t {

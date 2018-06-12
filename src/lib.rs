@@ -40,7 +40,10 @@ pub trait Header {
     ///
     /// Each call to `values.append` adds a header entry. Almost all headers should only append a
     /// single value. `Set-Cookie` is a rare exception.
-    fn to_values(&self, values: &mut ToValues) -> Result<(), Error>;
+    ///
+    /// This method is infallible. Header implementations should ensure at construction time that
+    /// they will be able to successfully serialize.
+    fn to_values(&self, values: &mut ToValues);
 }
 
 /// An error serializing or deserializing a header.
@@ -109,7 +112,7 @@ pub trait HeaderMapExt {
     /// Inserts the provided header into the map.
     ///
     /// This overwrites any existing entries for that header.
-    fn typed_insert<H>(&mut self, header: &H) -> Result<(), Error>
+    fn typed_insert<H>(&mut self, header: &H)
     where
         H: Header;
 }
@@ -129,12 +132,12 @@ impl HeaderMapExt for HeaderMap {
         }
     }
 
-    fn typed_insert<H>(&mut self, header: &H) -> Result<(), Error>
+    fn typed_insert<H>(&mut self, header: &H)
     where
         H: Header,
     {
         let entry = self.entry(H::name()).unwrap();
         let mut values = ToValues(ToValuesState::First(entry));
-        header.to_values(&mut values)
+        header.to_values(&mut values);
     }
 }

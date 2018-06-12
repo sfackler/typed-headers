@@ -85,7 +85,7 @@ impl Header for ContentLength {
     }
 
     #[inline]
-    fn to_values(&self, values: &mut ToValues) -> Result<(), Error> {
-        util::encode_single_value(&self.0, values)
+    fn to_values(&self, values: &mut ToValues) {
+        util::encode_single_value(&self.0, values);
     }
 }

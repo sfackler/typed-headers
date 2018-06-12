@@ -55,20 +55,17 @@ where
     }
 }
 
-pub fn encode_single_value<T>(value: &T, values: &mut ToValues) -> Result<(), Error>
+pub fn encode_single_value<T>(value: &T, values: &mut ToValues)
 where
     T: fmt::Display,
 {
     let value = value.to_string();
-    let value = HeaderValue::from_str(&value).map_err(Error::custom)?;
+    let value = HeaderValue::from_str(&value).expect("failed to encode header");
     values.append(value);
-    Ok(())
 }
 
 pub fn parse_comma_delimited<T>(
     values: &mut header::ValueIter<HeaderValue>,
-    min: Option<usize>,
-    max: Option<usize>,
 ) -> Result<Option<Vec<T>>, Error>
 where
     T: FromStr,
@@ -94,75 +91,26 @@ where
     if empty {
         Ok(None)
     } else {
-        if let Some(min) = min {
-            if out.len() < min {
-                return Err(Error::custom(format!(
-                    "expected at least {} values, but got {}",
-                    min,
-                    out.len()
-                )));
-            }
-        }
-        if let Some(max) = max {
-            if out.len() > max {
-                return Err(Error::custom(format!(
-                    "expected at most {} values, but got {}",
-                    max,
-                    out.len()
-                )));
-            }
-        }
-
         Ok(Some(out))
     }
 }
 
-pub fn encode_comma_delimited<I>(
-    elements: I,
-    values: &mut ToValues,
-    min: Option<usize>,
-    max: Option<usize>,
-) -> Result<(), Error>
+pub fn encode_comma_delimited<I>(elements: I, values: &mut ToValues)
 where
     I: IntoIterator,
     I::Item: fmt::Display,
 {
     let mut out = String::new();
     let mut it = elements.into_iter();
-    let mut count = 0;
     if let Some(elem) = it.next() {
         write!(out, "{}", elem).unwrap();
-        count += 1;
-    }
-    for elem in it {
-        write!(out, ", {}", elem).unwrap();
-        count += 1;
-    }
-    if let Some(min) = min {
-        if count < min {
-            return Err(Error::custom(format!(
-                "expected at least {} values, but got {}",
-                min, count
-            )));
+
+        for elem in it {
+            write!(out, ", {}", elem).unwrap();
         }
     }
-    if let Some(max) = max {
-        if count > max {
-            return Err(Error::custom(format!(
-                "expected at most {} values, but got {}",
-                max, count
-            )));
-        }
-    }
-    if count != 0 && out.as_bytes().iter().filter(|&&b| b == b',').count() != count - 1 {
-        return Err(Error::custom("values contained internal `,` characters"));
-    }
-    if out.contains(",,") {
-        return Err(Error::custom("empty values are not permitted"));
-    }
-    let value = HeaderValue::from_str(&out).map_err(Error::custom)?;
+    let value = HeaderValue::from_str(&out).expect("failed to encode header");
     values.append(value);
-    Ok(())
 }
 
 pub fn test_decode<H>(values: &[&str], expected: &H)
@@ -184,7 +132,7 @@ where
     H: Header,
 {
     let mut map = HeaderMap::new();
-    map.typed_insert(header).unwrap();
+    map.typed_insert(header);
 
     let values = map.get_all(H::name()).iter().collect::<Vec<_>>();
     assert_eq!(values.len(), expected.len());
@@ -198,7 +146,7 @@ where
     H: Header + PartialEq + fmt::Debug,
 {
     let mut map = HeaderMap::new();
-    map.typed_insert(header).unwrap();
+    map.typed_insert(header);
 
     let values = map.get_all(H::name()).iter().collect::<Vec<_>>();
     assert_eq!(values.len(), expected.len());

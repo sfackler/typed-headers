@@ -85,7 +85,7 @@ impl Header for Host {
     }
 
     #[inline]
-    fn to_values(&self, values: &mut ToValues) -> Result<(), Error> {
+    fn to_values(&self, values: &mut ToValues) {
         let value = match self.port {
             Some(port) => HeaderValue::from_str(&format!("{}:{}", self.host, port)),
             None => HeaderValue::from_str(&self.host),
@@ -93,6 +93,5 @@ impl Header for Host {
         let value = value.expect("should have already validated contents");
 
         values.append(value);
-        Ok(())
     }
 }
