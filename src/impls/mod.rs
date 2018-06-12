@@ -1,5 +1,6 @@
 pub use impls::accept::Accept;
 pub use impls::accept_encoding::AcceptEncoding;
+pub use impls::allow::Allow;
 pub use impls::auth_scheme::AuthScheme;
 pub use impls::authorization::Authorization;
 pub use impls::content_coding::ContentCoding;
@@ -219,6 +220,7 @@ macro_rules! token {
 
 mod accept;
 mod accept_encoding;
+mod allow;
 mod auth_scheme;
 mod authorization;
 mod content_coding;
