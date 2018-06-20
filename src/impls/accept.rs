@@ -1,5 +1,5 @@
-use mime::Mime;
 use http::header::ACCEPT;
+use mime::Mime;
 
 use QualityItem;
 

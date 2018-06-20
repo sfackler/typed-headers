@@ -130,6 +130,13 @@ pub trait HeaderMapExt {
     fn typed_insert<H>(&mut self, header: &H)
     where
         H: Header;
+
+    /// Removes and returns the specified header from the map, if present.
+    ///
+    /// The header will be removed even if it doesn't successfully parse.
+    fn typed_remove<H>(&mut self) -> Result<Option<H>, Error>
+    where
+        H: Header;
 }
 
 impl HeaderMapExt for HeaderMap {
@@ -154,5 +161,19 @@ impl HeaderMapExt for HeaderMap {
         let entry = self.entry(H::name()).unwrap();
         let mut values = ToValues(ToValuesState::First(entry));
         header.to_values(&mut values);
+    }
+
+    fn typed_remove<H>(&mut self) -> Result<Option<H>, Error>
+    where
+        H: Header,
+    {
+        match self.entry(H::name()).unwrap() {
+            header::Entry::Occupied(entry) => {
+                let r = H::parse(&mut entry.iter());
+                entry.remove();
+                r
+            }
+            header::Entry::Vacant(_) => Ok(None),
+        }
     }
 }

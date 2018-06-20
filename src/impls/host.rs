@@ -75,8 +75,8 @@ impl Header for Host {
             None => return Ok(None),
         };
 
-        let authority =
-            Authority::from_shared(Bytes::from(value.as_bytes())).map_err(|_| Error::invalid_value())?;
+        let authority = Authority::from_shared(Bytes::from(value.as_bytes()))
+            .map_err(|_| Error::invalid_value())?;
         // host header can't contain userinfo
         if authority.as_str().contains('@') {
             return Err(Error::invalid_value());
