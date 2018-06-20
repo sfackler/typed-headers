@@ -47,7 +47,7 @@ macro_rules! header {
     ($(#[$a:meta])*($id:ident, $n:expr) => ($item:ty)+) => {
         $(#[$a])*
         #[derive(Clone, Debug, PartialEq)]
-        pub struct $id(pub ::std::vec::Vec<$item>);
+        pub struct $id(::std::vec::Vec<$item>);
         header!(@deref $id => Vec<$item>);
 
         impl $id {
