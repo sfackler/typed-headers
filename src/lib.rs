@@ -46,33 +46,48 @@ pub trait Header {
     fn to_values(&self, values: &mut ToValues);
 }
 
+#[derive(Debug)]
+enum ErrorKind {
+    InvalidValue,
+    TooFewValues,
+    TooManyValues,
+}
+
 /// An error serializing or deserializing a header.
 #[derive(Debug)]
-pub struct Error(Box<error::Error + Sync + Send>);
+pub struct Error(ErrorKind);
 
 impl Error {
-    /// Creates a new error with the provided cause.
-    pub fn custom<E>(e: E) -> Error
-    where
-        E: Into<Box<error::Error + Sync + Send>>,
-    {
-        Error(e.into())
+    #[inline]
+    pub fn invalid_value() -> Error {
+        Error(ErrorKind::InvalidValue)
     }
 
-    fn too_many_values() -> Error {
-        Error::custom("too many header values")
+    #[inline]
+    pub fn too_few_values() -> Error {
+        Error(ErrorKind::TooFewValues)
+    }
+
+    #[inline]
+    pub fn too_many_values() -> Error {
+        Error(ErrorKind::TooManyValues)
     }
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        fmt::Display::fmt(&self.0, fmt)
+        let s = match self.0 {
+            ErrorKind::InvalidValue => "invalid header value",
+            ErrorKind::TooFewValues => "too few header values",
+            ErrorKind::TooManyValues => "too many header values",
+        };
+        fmt.write_str(s)
     }
 }
 
 impl error::Error for Error {
     fn description(&self) -> &str {
-        error::Error::description(&*self.0)
+        "header error"
     }
 }
 

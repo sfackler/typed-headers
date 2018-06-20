@@ -57,9 +57,9 @@ impl Header for ContentLength {
         let mut length = None;
 
         for value in values {
-            let value = value.to_str().map_err(Error::custom)?;
+            let value = value.to_str().map_err(|_| Error::invalid_value())?;
             if value.trim().is_empty() {
-                return Err(Error::custom("empty header value"));
+                return Err(Error::invalid_value());
             }
 
             for elem in value.split(',') {
@@ -68,13 +68,9 @@ impl Header for ContentLength {
                     continue;
                 }
 
-                let elem = elem.parse().map_err(Error::custom)?;
+                let elem = elem.parse().map_err(|_| Error::invalid_value())?;
                 match length {
-                    Some(length) if length != elem => {
-                        return Err(Error::custom(
-                            "multiple non-identical Content-Length headers",
-                        ));
-                    }
+                    Some(length) if length != elem => return Err(Error::invalid_value()),
                     Some(_) => {}
                     None => length = Some(elem),
                 }

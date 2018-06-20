@@ -54,7 +54,7 @@ macro_rules! header {
             #[inline]
             pub fn new(values: Vec<$item>) -> ::std::result::Result<$id, $crate::Error> {
                 if values.is_empty() {
-                    Err($crate::Error::custom("expected some values"))
+                    Err($crate::Error::too_few_values())
                 } else {
                     Ok($id(values))
                 }
@@ -140,7 +140,7 @@ macro_rules! header {
 
 macro_rules! token {
     (
-        $(#[$attr:meta])* $name:ident, $error:ident => {
+        $(#[$attr:meta])* $name:ident => {
             $(
                 $(#[$variant_attr:meta])*
                 $variant:ident => $s:expr => [$($alias:expr),*],
@@ -169,7 +169,7 @@ macro_rules! token {
             /// Constructs a new instance of this value from a string.
             ///
             /// An error is returned if the string is not a valid token.
-            pub fn new(s: &str) -> ::std::result::Result<$name, $error> {
+            pub fn new(s: &str) -> ::std::result::Result<$name, $crate::Error> {
                 $(
                     if s.eq_ignore_ascii_case($s) {
                         return Ok($name(Inner::$variant));
@@ -185,7 +185,7 @@ macro_rules! token {
                 if $crate::util::is_token(s) {
                     Ok($name(Inner::Other(s.to_ascii_lowercase())))
                 } else {
-                    Err($error(()))
+                    Err($crate::Error::invalid_value())
                 }
             }
 
@@ -207,25 +207,10 @@ macro_rules! token {
         }
 
         impl ::std::str::FromStr for $name {
-            type Err = $error;
+            type Err = $crate::Error;
 
-            fn from_str(s: &str) -> ::std::result::Result<$name, $error> {
+            fn from_str(s: &str) -> ::std::result::Result<$name, $crate::Error> {
                 $name::new(s)
-            }
-        }
-
-        #[derive(Debug)]
-        pub struct $error(());
-
-        impl ::std::fmt::Display for $error {
-            fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-                fmt.write_str("invalid token")
-            }
-        }
-
-        impl ::std::error::Error for $error {
-            fn description(&self) -> &str {
-                "invalid token"
             }
         }
     }

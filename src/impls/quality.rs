@@ -202,7 +202,7 @@ mod test {
             if s == "item" {
                 Ok(Item)
             } else {
-                Err(Error::custom("wrong"))
+                Err(Error::invalid_value())
             }
         }
     }

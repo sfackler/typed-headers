@@ -33,7 +33,7 @@ impl Host {
             Some(port) => Bytes::from(format!("{}:{}", host, port)),
             None => Bytes::from(host),
         };
-        let authority = Authority::from_shared(authority).map_err(Error::custom)?;
+        let authority = Authority::from_shared(authority).map_err(|_| Error::invalid_value())?;
 
         Ok(Host::from_authority(&authority))
     }
@@ -76,9 +76,10 @@ impl Header for Host {
         };
 
         let authority =
-            Authority::from_shared(Bytes::from(value.as_bytes())).map_err(Error::custom)?;
+            Authority::from_shared(Bytes::from(value.as_bytes())).map_err(|_| Error::invalid_value())?;
+        // host header can't contain userinfo
         if authority.as_str().contains('@') {
-            return Err(Error::custom("Host header may not contain userinfo"));
+            return Err(Error::invalid_value());
         }
 
         Ok(Some(Host::from_authority(&authority)))

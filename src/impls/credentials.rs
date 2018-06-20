@@ -53,11 +53,11 @@ impl Credentials {
     #[inline]
     pub fn basic(user_id: &str, password: &str) -> Result<Credentials, Error> {
         if user_id.contains(':') || has_ctr(user_id) {
-            return Err(Error::custom("invalid user-id"));
+            return Err(Error::invalid_value());
         }
 
         if has_ctr(password) {
-            return Err(Error::custom("invalid password"));
+            return Err(Error::invalid_value());
         }
 
         let token = format!("{}:{}", user_id, password);
@@ -111,7 +111,7 @@ impl FromStr for Credentials {
             .next()
             .unwrap()
             .parse::<AuthScheme>()
-            .map_err(Error::custom)?;
+            .map_err(|_| Error::invalid_value())?;
 
         let info = match it.next() {
             Some(info) => info,
@@ -123,7 +123,7 @@ impl FromStr for Credentials {
         match info.parse::<Token68>() {
             Ok(token) => Ok(Credentials::from_token68(auth_scheme, token)),
             // FIXME parse out auth-params
-            Err(e) => return Err(Error::custom(e)),
+            Err(_) => return Err(Error::invalid_value()),
         }
     }
 }

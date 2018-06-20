@@ -45,10 +45,10 @@ where
         Some(value) => {
             let value = value
                 .to_str()
-                .map_err(Error::custom)?
+                .map_err(|_| Error::invalid_value())?
                 .trim()
                 .parse()
-                .map_err(Error::custom)?;
+                .map_err(|_| Error::invalid_value())?;
             Ok(Some(value))
         }
         None => Ok(None),
@@ -76,14 +76,14 @@ where
     for value in values {
         empty = false;
 
-        let value = value.to_str().map_err(Error::custom)?;
+        let value = value.to_str().map_err(|_| Error::invalid_value())?;
         for elem in value.split(',') {
             let elem = elem.trim();
             if elem.is_empty() {
                 continue;
             }
 
-            let elem = elem.parse().map_err(Error::custom)?;
+            let elem = elem.parse().map_err(|_| Error::invalid_value())?;
             out.push(elem);
         }
     }

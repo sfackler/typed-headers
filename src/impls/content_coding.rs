@@ -1,6 +1,6 @@
 token! {
     /// A content coding, used in the `Accept-Encoding` and `Content-Encoding` headers.
-    ContentCoding, InvalidContentCoding => {
+    ContentCoding => {
         /// The Brotli coding, as specified in [RFC7932].
         ///
         /// [RFC7932]: https://tools.ietf.org/html/rfc7932

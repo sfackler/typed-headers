@@ -20,7 +20,7 @@ impl Header for RetryAfter {
             None => return Ok(None),
         };
 
-        let value = value.to_str().map_err(Error::custom)?;
+        let value = value.to_str().map_err(|_| Error::invalid_value())?;
 
         value
             .parse::<u64>()
@@ -28,7 +28,7 @@ impl Header for RetryAfter {
             .map(RetryAfter::DelaySeconds)
             .or_else(|| value.parse::<HttpDate>().ok().map(RetryAfter::HttpDate))
             .map(Some)
-            .ok_or_else(|| Error::custom("invalid retry-after"))
+            .ok_or_else(|| Error::invalid_value())
     }
 
     #[inline]

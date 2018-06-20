@@ -33,7 +33,7 @@ impl FromStr for HttpDate {
         let naive = NaiveDateTime::parse_from_str(s, IMF_FIXDATE_PATTERN)
             .or_else(|_| NaiveDateTime::parse_from_str(s, RFC850_DATE_PATTERN))
             .or_else(|_| NaiveDateTime::parse_from_str(s, ASCTIME_DATE_PATTERN))
-            .map_err(|_| Error::custom("invalid HTTP-date"))?;
+            .map_err(|_| Error::invalid_value())?;
 
         Ok(HttpDate(DateTime::from_utc(naive, Utc)))
     }
