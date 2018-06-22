@@ -2,6 +2,10 @@
 name = "typed-headers"
 version = "0.1.0"
 authors = ["Steven Fackler <sfackler@gmail.com>"]
+license = "MIT/Apache-2.0"
+description = "Typed HTTP header serialization and deserialization."
+repository = "https://github.com/sfackler/typed-headers"
+readme = "README.md"
 
 [dependencies]
 base64 = "0.9"

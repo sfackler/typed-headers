@@ -5,6 +5,7 @@
 //!
 //! The `HeaderMapExt` extension trait provides new methods on the `http::HeaderMap` type to insert, retrieve, and
 //! remove headers in a typed manner.
+#![doc(html_root_url = "https://docs.rs/typed-headers/0.1")]
 
 extern crate base64;
 extern crate bytes;
