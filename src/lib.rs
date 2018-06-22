@@ -1,4 +1,10 @@
-//! Typed HTTP header serialization and deserialization supported.
+//! Typed HTTP header serialization and deserialization.
+//!
+//! This crate is still in its early, experimental stages. It currently takes a fairly pedantic view of parsing, and
+//! tries to support exactly what's specified in the HTTP RFCs.
+//!
+//! The `HeaderMapExt` extension trait provides new methods on the `http::HeaderMap` type to insert, retrieve, and
+//! remove headers in a typed manner.
 
 extern crate base64;
 extern crate bytes;
