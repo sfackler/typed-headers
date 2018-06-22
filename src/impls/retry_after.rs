@@ -14,7 +14,9 @@ impl Header for RetryAfter {
     }
 
     #[inline]
-    fn parse<'a>(values: &mut ValueIter<'a, HeaderValue>) -> Result<Option<RetryAfter>, Error> {
+    fn from_values<'a>(
+        values: &mut ValueIter<'a, HeaderValue>,
+    ) -> Result<Option<RetryAfter>, Error> {
         let value = match values.next() {
             Some(value) => value,
             None => return Ok(None),

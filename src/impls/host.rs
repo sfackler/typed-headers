@@ -69,7 +69,9 @@ impl Header for Host {
     }
 
     #[inline]
-    fn parse<'a>(values: &mut header::ValueIter<'a, HeaderValue>) -> Result<Option<Host>, Error> {
+    fn from_values<'a>(
+        values: &mut header::ValueIter<'a, HeaderValue>,
+    ) -> Result<Option<Host>, Error> {
         let value = match values.next() {
             Some(value) => value,
             None => return Ok(None),

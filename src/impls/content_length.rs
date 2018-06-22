@@ -53,7 +53,9 @@ impl Header for ContentLength {
     // implementations that produce that!
     // https://github.com/request/request/issues/2091#issuecomment-328715113
     #[inline]
-    fn parse(values: &mut header::ValueIter<HeaderValue>) -> Result<Option<ContentLength>, Error> {
+    fn from_values(
+        values: &mut header::ValueIter<HeaderValue>,
+    ) -> Result<Option<ContentLength>, Error> {
         let mut length = None;
 
         for value in values {

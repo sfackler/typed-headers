@@ -32,7 +32,9 @@ pub trait Header {
     ///
     /// If the iterator is not exhausted when this function returns, it will be treated as a parse
     /// error.
-    fn parse<'a>(values: &mut header::ValueIter<'a, HeaderValue>) -> Result<Option<Self>, Error>
+    fn from_values<'a>(
+        values: &mut header::ValueIter<'a, HeaderValue>,
+    ) -> Result<Option<Self>, Error>
     where
         Self: Sized;
 
@@ -145,7 +147,7 @@ impl HeaderMapExt for HeaderMap {
         H: Header,
     {
         let mut values = self.get_all(H::name()).iter();
-        match H::parse(&mut values) {
+        match H::from_values(&mut values) {
             Ok(header) => match values.next() {
                 Some(_) => Err(Error::too_many_values()),
                 None => Ok(header),
@@ -169,7 +171,7 @@ impl HeaderMapExt for HeaderMap {
     {
         match self.entry(H::name()).unwrap() {
             header::Entry::Occupied(entry) => {
-                let r = H::parse(&mut entry.iter());
+                let r = H::from_values(&mut entry.iter());
                 entry.remove();
                 r
             }

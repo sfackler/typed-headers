@@ -30,7 +30,7 @@ macro_rules! header {
             }
 
             #[inline]
-            fn parse(
+            fn from_values(
                 values: &mut $crate::http::header::ValueIter<$crate::http::header::HeaderValue>,
             ) -> ::std::result::Result<::std::option::Option<$id>, $crate::Error>
             {
@@ -68,7 +68,7 @@ macro_rules! header {
             }
 
             #[inline]
-            fn parse(
+            fn from_values(
                 values: &mut $crate::http::header::ValueIter<$crate::http::header::HeaderValue>,
             ) -> ::std::result::Result<::std::option::Option<$id>, $crate::Error>
             {
@@ -105,7 +105,7 @@ macro_rules! header {
             }
 
             #[inline]
-            fn parse(
+            fn from_values(
                 values: &mut $crate::http::header::ValueIter<$crate::http::header::HeaderValue>,
             ) -> ::std::result::Result<::std::option::Option<$id>, $crate::Error>
             {
