@@ -80,6 +80,12 @@ impl ToHeaderValue for u64 {
     }
 }
 
+impl ToHeaderValue for u32 {
+    fn to_header_value(&self) -> String {
+        self.to_string()
+    }
+}
+
 impl ToHeaderValue for impls::Credentials {
     fn to_header_value(&self) -> String {
         self.to_string()
