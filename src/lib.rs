@@ -23,6 +23,7 @@ pub use impls::*;
 
 mod impls;
 pub mod util;
+mod internals;
 
 pub trait Header {
     /// Returns the name of this header.
