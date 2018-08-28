@@ -1,4 +1,7 @@
 use http::header::{self, HeaderMap, HeaderValue};
+use impls;
+use http;
+use mime::Mime;
 use std::error;
 use std::fmt::{self, Write};
 use std::str::FromStr;
@@ -55,11 +58,69 @@ where
     }
 }
 
+pub trait ToHeaderValue {
+    fn to_header_value(&self) -> String;
+}
+
+impl<'a, T: ToHeaderValue> ToHeaderValue for &'a T {
+    fn to_header_value(&self) -> String {
+        (*self).to_header_value()
+    }
+}
+
+impl ToHeaderValue for String {
+    fn to_header_value(&self) -> String {
+        self.to_string()
+    }
+}
+
+impl ToHeaderValue for u64 {
+    fn to_header_value(&self) -> String {
+        self.to_string()
+    }
+}
+
+impl ToHeaderValue for impls::Credentials {
+    fn to_header_value(&self) -> String {
+        self.to_string()
+    }
+}
+
+impl ToHeaderValue for http::Method {
+    fn to_header_value(&self) -> String {
+        self.to_string()
+    }
+}
+
+impl<T: fmt::Display> ToHeaderValue for impls::QualityItem<T> {
+    fn to_header_value(&self) -> String {
+        self.to_string()
+    }
+}
+
+impl ToHeaderValue for impls::ContentCoding {
+    fn to_header_value(&self) -> String {
+        self.to_string()
+    }
+}
+
+impl ToHeaderValue for Mime {
+    fn to_header_value(&self) -> String {
+        self.to_string()
+    }
+}
+
+impl ToHeaderValue for str {
+    fn to_header_value(&self) -> String {
+        self.to_string()
+    }
+}
+
 pub fn encode_single_value<T>(value: &T, values: &mut ToValues)
 where
-    T: fmt::Display,
+    T: ToHeaderValue + ?Sized
 {
-    let value = value.to_string();
+    let value = value.to_header_value();
     let value = HeaderValue::from_str(&value).expect("failed to encode header");
     values.append(value);
 }
@@ -98,15 +159,15 @@ where
 pub fn encode_comma_delimited<I>(elements: I, values: &mut ToValues)
 where
     I: IntoIterator,
-    I::Item: fmt::Display,
+    I::Item: ToHeaderValue
 {
     let mut out = String::new();
     let mut it = elements.into_iter();
     if let Some(elem) = it.next() {
-        write!(out, "{}", elem).unwrap();
+        write!(out, "{}", elem.to_header_value()).unwrap();
 
         for elem in it {
-            write!(out, ", {}", elem).unwrap();
+            write!(out, ", {}", elem.to_header_value()).unwrap();
         }
     }
     let value = HeaderValue::from_str(&out).expect("failed to encode header");
