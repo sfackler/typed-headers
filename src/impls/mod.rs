@@ -1,6 +1,7 @@
 pub use impls::accept::Accept;
 pub use impls::accept_encoding::AcceptEncoding;
 pub use impls::access_control_expose_headers::AccessControlExposeHeaders;
+pub use impls::access_control_allow_credentials::AccessControlAllowCredentials;
 pub use impls::allow::Allow;
 pub use impls::auth_scheme::AuthScheme;
 pub use impls::authorization::Authorization;
@@ -220,6 +221,7 @@ macro_rules! token {
 mod accept;
 mod accept_encoding;
 mod access_control_expose_headers;
+mod access_control_allow_credentials;
 mod allow;
 mod auth_scheme;
 mod authorization;
