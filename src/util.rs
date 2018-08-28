@@ -1,4 +1,4 @@
-use http::header::{self, HeaderMap, HeaderValue};
+use http::header::{self, HeaderMap, HeaderName, HeaderValue};
 use impls;
 use http;
 use mime::Mime;
@@ -107,6 +107,12 @@ impl ToHeaderValue for impls::ContentCoding {
 impl ToHeaderValue for Mime {
     fn to_header_value(&self) -> String {
         self.to_string()
+    }
+}
+
+impl ToHeaderValue for HeaderName {
+    fn to_header_value(&self) -> String {
+        self.as_str().to_string()
     }
 }
 
