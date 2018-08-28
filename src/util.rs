@@ -5,6 +5,7 @@ use mime::Mime;
 use std::error;
 use std::fmt::{self, Write};
 use std::str::FromStr;
+use impls::HttpDate;
 
 use {Error, Header, HeaderMapExt, ToValues};
 
@@ -81,6 +82,12 @@ impl ToHeaderValue for u64 {
 }
 
 impl ToHeaderValue for u32 {
+    fn to_header_value(&self) -> String {
+        self.to_string()
+    }
+}
+
+impl ToHeaderValue for HttpDate {
     fn to_header_value(&self) -> String {
         self.to_string()
     }
