@@ -6,6 +6,7 @@ use std::error;
 use std::fmt::{self, Write};
 use std::str::FromStr;
 use impls::{CacheDirective, HttpDate, ContentRangeSpec};
+use shared::{EntityTag};
 
 use {Error, Header, HeaderMapExt, ToValues};
 
@@ -130,6 +131,12 @@ impl ToHeaderValue for impls::ContentCoding {
 }
 
 impl ToHeaderValue for Mime {
+    fn to_header_value(&self) -> String {
+        self.to_string()
+    }
+}
+
+impl ToHeaderValue for EntityTag {
     fn to_header_value(&self) -> String {
         self.to_string()
     }

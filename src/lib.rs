@@ -21,9 +21,11 @@ use std::fmt;
 use std::mem;
 
 pub use impls::*;
+pub use shared::*;
 
 mod impls;
 pub mod util;
+mod shared;
 mod internals;
 
 pub trait Header {
