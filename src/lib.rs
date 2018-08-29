@@ -10,6 +10,7 @@
 extern crate base64;
 extern crate bytes;
 extern crate chrono;
+extern crate language_tags;
 
 pub extern crate http;
 pub extern crate mime;
