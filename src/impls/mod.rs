@@ -22,6 +22,7 @@ pub use impls::proxy_authorization::ProxyAuthorization;
 pub use impls::quality::{Quality, QualityItem};
 pub use impls::referer::Referer;
 pub use impls::retry_after::RetryAfter;
+pub use impls::set_cookie::SetCookie;
 pub use impls::token68::Token68;
 pub use impls::user_agent::UserAgent;
 
@@ -250,5 +251,6 @@ mod proxy_authorization;
 mod quality;
 mod referer;
 mod retry_after;
+mod set_cookie;
 mod token68;
 mod user_agent;
