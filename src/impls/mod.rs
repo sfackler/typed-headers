@@ -21,6 +21,7 @@ pub use impls::proxy_authorization::ProxyAuthorization;
 pub use impls::quality::{Quality, QualityItem};
 pub use impls::retry_after::RetryAfter;
 pub use impls::token68::Token68;
+pub use impls::user_agent::UserAgent;
 
 macro_rules! header {
     // #rule
@@ -246,3 +247,4 @@ mod proxy_authorization;
 mod quality;
 mod retry_after;
 mod token68;
+mod user_agent;
