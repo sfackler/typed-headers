@@ -1,6 +1,7 @@
 use bytes::Bytes;
 use http::header::{self, HeaderName, HeaderValue, HOST};
 use http::uri::Authority;
+use std::fmt;
 
 use {Error, Header, ToValues};
 
@@ -18,7 +19,7 @@ use {Error, Header, ToValues};
 /// ```
 ///
 /// [RFC7230]: https://tools.ietf.org/html/rfc7230#section-5.4
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Host {
     host: String,
     port: Option<u16>,
@@ -89,12 +90,15 @@ impl Header for Host {
 
     #[inline]
     fn to_values(&self, values: &mut ToValues) {
-        let value = match self.port {
-            Some(port) => HeaderValue::from_str(&format!("{}:{}", self.host, port)),
-            None => HeaderValue::from_str(&self.host),
-        };
-        let value = value.expect("should have already validated contents");
+        values.append(HeaderValue::from_str(&self.to_string()).unwrap());
+    }
+}
 
-        values.append(value);
+impl fmt::Display for Host {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self.port {
+            Some(port) => write!(f, "{}:{}", self.host, port),
+            None => f.write_str(&self.host),
+        }
     }
 }
