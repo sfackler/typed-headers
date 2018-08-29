@@ -6,7 +6,9 @@ use std::error;
 use std::fmt::{self, Write};
 use std::str::FromStr;
 use impls::{CacheDirective, HttpDate, ContentRangeSpec};
-use shared::{EntityTag};
+use shared::{EntityTag, Charset};
+use language_tags::LanguageTag;
+use percent_encoding;
 
 use {Error, Header, HeaderMapExt, ToValues};
 
@@ -255,4 +257,106 @@ where
 
     let actual = map.typed_get::<H>().unwrap().unwrap();
     assert_eq!(header, &actual);
+}
+
+
+/// An extended header parameter value (i.e., tagged with a character set and optionally,
+/// a language), as defined in [RFC 5987](https://tools.ietf.org/html/rfc5987#section-3.2).
+#[derive(Clone, Debug, PartialEq)]
+pub struct ExtendedValue {
+    /// The character set that is used to encode the `value` to a string.
+    pub charset: Charset,
+    /// The human language details of the `value`, if available.
+    pub language_tag: Option<LanguageTag>,
+    /// The parameter value, as expressed in octets.
+    pub value: Vec<u8>,
+}
+
+/// Parses extended header parameter values (`ext-value`), as defined in
+/// [RFC 5987](https://tools.ietf.org/html/rfc5987#section-3.2).
+///
+/// Extended values are denoted by parameter names that end with `*`.
+///
+/// ## ABNF
+///
+/// ```text
+/// ext-value     = charset  "'" [ language ] "'" value-chars
+///               ; like RFC 2231's <extended-initial-value>
+///               ; (see [RFC2231], Section 7)
+///
+/// charset       = "UTF-8" / "ISO-8859-1" / mime-charset
+///
+/// mime-charset  = 1*mime-charsetc
+/// mime-charsetc = ALPHA / DIGIT
+///               / "!" / "#" / "$" / "%" / "&"
+///               / "+" / "-" / "^" / "_" / "`"
+///               / "{" / "}" / "~"
+///               ; as <mime-charset> in Section 2.3 of [RFC2978]
+///               ; except that the single quote is not included
+///               ; SHOULD be registered in the IANA charset registry
+///
+/// language      = <Language-Tag, defined in [RFC5646], Section 2.1>
+///
+/// value-chars   = *( pct-encoded / attr-char )
+///
+/// pct-encoded   = "%" HEXDIG HEXDIG
+///               ; see [RFC3986], Section 2.1
+///
+/// attr-char     = ALPHA / DIGIT
+///               / "!" / "#" / "$" / "&" / "+" / "-" / "."
+///               / "^" / "_" / "`" / "|" / "~"
+///               ; token except ( "*" / "'" / "%" )
+/// ```
+pub fn parse_extended_value(val: &str) -> Result<ExtendedValue, Error> {
+
+    // Break into three pieces separated by the single-quote character
+    let mut parts = val.splitn(3,'\'');
+
+    // Interpret the first piece as a Charset
+    let charset: Charset = match parts.next() {
+        None => return Err(Error::invalid_value()),
+        Some(n) => try!(FromStr::from_str(n)),
+    };
+
+    // Interpret the second piece as a language tag
+    let lang: Option<LanguageTag> = match parts.next() {
+        None => return Err(Error::invalid_value()),
+        Some("") => None,
+        Some(s) => match s.parse() {
+            Ok(lt) => Some(lt),
+            Err(_) => return Err(Error::invalid_value()),
+        }
+    };
+
+    // Interpret the third piece as a sequence of value characters
+    let value: Vec<u8> = match parts.next() {
+        None => return Err(Error::invalid_value()),
+        Some(v) => percent_encoding::percent_decode(v.as_bytes()).collect(),
+    };
+
+    Ok(ExtendedValue {
+        charset: charset,
+        language_tag: lang,
+        value: value,
+    })
+}
+
+pub fn http_percent_encode(f: &mut fmt::Formatter, bytes: &[u8]) -> fmt::Result {
+    let encoded = percent_encoding::percent_encode(bytes, self::percent_encoding_http::HTTP_VALUE);
+    fmt::Display::fmt(&encoded, f)
+}
+
+mod percent_encoding_http {
+    use percent_encoding;
+
+    // internal module because macro is hard-coded to make a public item
+    // but we don't want to public export this item
+    define_encode_set! {
+        // This encode set is used for HTTP header values and is defined at
+        // https://tools.ietf.org/html/rfc5987#section-3.2
+        pub HTTP_VALUE = [percent_encoding::SIMPLE_ENCODE_SET] | {
+            ' ', '"', '%', '\'', '(', ')', '*', ',', '/', ':', ';', '<', '-', '>', '?',
+            '[', '\\', ']', '{', '}'
+        }
+    }
 }

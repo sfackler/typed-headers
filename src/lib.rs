@@ -11,6 +11,9 @@ extern crate base64;
 extern crate bytes;
 extern crate chrono;
 extern crate language_tags;
+extern crate unicase;
+#[macro_use]
+extern crate percent_encoding;
 
 pub extern crate http;
 pub extern crate mime;
