@@ -1,6 +1,7 @@
 pub use impls::accept::Accept;
 pub use impls::accept_encoding::AcceptEncoding;
 pub use impls::access_control_allow_credentials::AccessControlAllowCredentials;
+pub use impls::access_control_allow_headers::AccessControlAllowHeaders;
 pub use impls::access_control_allow_methods::AccessControlAllowMethods;
 pub use impls::access_control_allow_origin::AccessControlAllowOrigin;
 pub use impls::access_control_max_age::AccessControlMaxAge;
@@ -242,6 +243,7 @@ macro_rules! token {
 mod accept;
 mod accept_encoding;
 mod access_control_allow_credentials;
+mod access_control_allow_headers;
 mod access_control_allow_methods;
 mod access_control_allow_origin;
 mod access_control_expose_headers;
