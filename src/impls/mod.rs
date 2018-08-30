@@ -25,6 +25,7 @@ pub use impls::etag::ETag;
 pub use impls::expires::Expires;
 pub use impls::host::Host;
 pub use impls::http_date::HttpDate;
+pub use impls::if_none_match::IfNoneMatch;
 pub use impls::if_modified_since::IfModifiedSince;
 pub use impls::last_modified::LastModified;
 pub use impls::location::Location;
@@ -139,6 +140,48 @@ macro_rules! header {
             #[inline]
             fn to_values(&self, values: &mut $crate::ToValues) {
                 $crate::util::encode_single_value(&self.0, values);
+            }
+        }
+    };
+    // List header, one or more items with "*" option
+    ($(#[$a:meta])*($id:ident, $n:expr) => (Any / ($item:ty)+)) => {
+        $(#[$a])*
+        #[derive(Clone, Debug, PartialEq)]
+        pub enum $id {
+            /// Any value is a match
+            Any,
+            /// Only the listed items are a match
+            Items(Vec<$item>),
+        }
+        impl $crate::Header for $id {
+            #[inline]
+            fn name() -> &'static $crate::http::header::HeaderName {
+                &$n
+            }
+            #[inline]
+            fn from_values(
+                values: &mut $crate::http::header::ValueIter<$crate::http::header::HeaderValue>,
+            ) -> ::std::result::Result<::std::option::Option<$id>, $crate::Error>
+            {
+                {
+                    let mut pvalues = values.by_ref().peekable();
+                    if let Some(first) = pvalues.peek() {
+                        if let Ok("*") = first.to_str() {
+                            return Ok(Some($id::Any));
+                        }
+                    }
+                }
+                match $crate::util::parse_comma_delimited(values)? {
+                    Some(values) => Ok(Some($id::Items(values))),
+                    None => Ok(None),
+                }
+            }
+            #[inline]
+            fn to_values(&self, values: &mut $crate::ToValues) {
+                match *self {
+                    $id::Any => $crate::util::encode_single_value("*", values),
+                    $id::Items(ref fields) => $crate::util::encode_comma_delimited(fields, values),
+                }
             }
         }
     };
@@ -267,6 +310,7 @@ mod etag;
 mod expires;
 mod host;
 mod http_date;
+mod if_none_match;
 mod if_modified_since;
 mod last_modified;
 mod location;
