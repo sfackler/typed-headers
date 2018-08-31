@@ -10,7 +10,7 @@ const RFC850_DATE_PATTERN: &'static str = "%A, %d-%b-%y %T GMT";
 const ASCTIME_DATE_PATTERN: &'static str = "%a %b %e %T %Y";
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct HttpDate(DateTime<Utc>);
+pub struct HttpDate(pub DateTime<Utc>);
 
 impl From<SystemTime> for HttpDate {
     #[inline]
