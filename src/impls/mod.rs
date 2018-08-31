@@ -40,6 +40,7 @@ pub use impls::retry_after::RetryAfter;
 pub use impls::set_cookie::SetCookie;
 pub use impls::token68::Token68;
 pub use impls::user_agent::UserAgent;
+pub use impls::vary::Vary;
 
 macro_rules! header {
     // #rule
@@ -326,3 +327,4 @@ mod retry_after;
 mod set_cookie;
 mod token68;
 mod user_agent;
+mod vary;
