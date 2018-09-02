@@ -43,6 +43,7 @@ pub use impls::token68::Token68;
 pub use impls::user_agent::UserAgent;
 pub use impls::vary::Vary;
 
+#[macro_export]
 macro_rules! header {
     // #rule
     ($(#[$a:meta])*($id:ident, $n:expr) => ($item:ty)*) => {
