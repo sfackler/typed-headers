@@ -165,12 +165,13 @@ where
     values.append(value);
 }
 
-pub fn parse_comma_delimited<T>(
-    values: &mut header::ValueIter<HeaderValue>,
+pub fn parse_comma_delimited<'b, 'a: 'b, T, I>(
+    values: &'b mut I,
 ) -> Result<Option<Vec<T>>, Error>
 where
     T: FromStr,
     T::Err: Into<Box<error::Error + Sync + Send>>,
+    I: Iterator<Item=&'a HeaderValue> + 'b,
 {
     let mut out = vec![];
     let mut empty = true;

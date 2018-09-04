@@ -20,3 +20,26 @@ header! {
     /// * `accept-encoding, accept-language`
     (Vary, VARY) => (Any / (HeaderName)+)
 }
+
+#[cfg(test)]
+mod test {
+    use util;
+
+    use super::*;
+
+    #[test]
+    fn vary_any() {
+        util::test_round_trip(
+            &Vary::Any,
+            &["*"],
+        );
+    }
+
+    #[test]
+    fn vary_foo() {
+        util::test_round_trip(
+            &Vary::Items(vec![HeaderName::from_static("foo")]),
+            &["foo"],
+        );
+    }
+}

@@ -167,15 +167,14 @@ macro_rules! header {
                 values: &mut $crate::http::header::ValueIter<$crate::http::header::HeaderValue>,
             ) -> ::std::result::Result<::std::option::Option<$id>, $crate::Error>
             {
-                {
-                    let mut pvalues = values.by_ref().peekable();
-                    if let Some(first) = pvalues.peek() {
-                        if let Ok("*") = first.to_str() {
-                            return Ok(Some($id::Any));
-                        }
+                let mut pvalues = values.peekable();
+                if let Some(first) = pvalues.peek() {
+                    if let Ok("*") = first.to_str() {
+                        return Ok(Some($id::Any));
                     }
                 }
-                match $crate::util::parse_comma_delimited(values)? {
+
+                match $crate::util::parse_comma_delimited(&mut pvalues)? {
                     Some(values) => Ok(Some($id::Items(values))),
                     None => Ok(None),
                 }
