@@ -19,6 +19,8 @@ token! {
         COMPRESS => "compress" => ["x-compress"],
         /// The identity coding.
         IDENTITY => "identity" => [],
+        /// The chunked coding
+        CHUNKED => "chunked" => [],
         /// A wildcard, used in the `Accept-Encoding` header to indicate that all codings are acceptable.
         STAR => "*" => [],
     }
