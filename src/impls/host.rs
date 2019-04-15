@@ -45,7 +45,7 @@ impl Host {
     pub fn from_authority(authority: &Authority) -> Host {
         Host {
             host: authority.host().to_string(),
-            port: authority.port(),
+            port: authority.port_u16(),
         }
     }
 
