@@ -12,9 +12,9 @@ pub fn is_token(s: &str) -> bool {
     }
 
     s.as_bytes().iter().all(|b| match *b {
-        b'a'...b'z'
-        | b'A'...b'Z'
-        | b'0'...b'9'
+        b'a'..=b'z'
+        | b'A'..=b'Z'
+        | b'0'..=b'9'
         | b'!'
         | b'#'
         | b'$'
@@ -39,7 +39,7 @@ pub fn parse_single_value<T>(
 ) -> Result<Option<T>, Error>
 where
     T: FromStr,
-    T::Err: Into<Box<error::Error + Sync + Send>>,
+    T::Err: Into<Box<dyn error::Error + Sync + Send>>,
 {
     match values.next() {
         Some(value) => {
@@ -69,7 +69,7 @@ pub fn parse_comma_delimited<T>(
 ) -> Result<Option<Vec<T>>, Error>
 where
     T: FromStr,
-    T::Err: Into<Box<error::Error + Sync + Send>>,
+    T::Err: Into<Box<dyn error::Error + Sync + Send>>,
 {
     let mut out = vec![];
     let mut empty = true;

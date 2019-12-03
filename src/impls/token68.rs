@@ -12,14 +12,14 @@ impl Token68 {
     /// Constructs a new base68 value.
     #[inline]
     pub fn new(s: &str) -> Result<Token68, InvalidToken68> {
-        let trimmed = s.trim_right_matches('=');
+        let trimmed = s.trim_end_matches('=');
 
         if trimmed.is_empty() {
             return Err(InvalidToken68(()));
         }
 
         let ok = trimmed.as_bytes().iter().all(|b| match b {
-            b'0'...b'9' | b'a'...b'z' | b'A'...b'Z' | b'-' | b'.' | b'_' | b'~' | b'+' | b'/' => {
+            b'0'..=b'9' | b'a'..=b'z' | b'A'..=b'Z' | b'-' | b'.' | b'_' | b'~' | b'+' | b'/' => {
                 true
             }
             _ => false,

@@ -8,8 +8,8 @@ repository = "https://github.com/sfackler/typed-headers"
 readme = "README.md"
 
 [dependencies]
-base64 = "0.10"
-bytes = "0.4"
+base64 = "0.11"
+bytes = "0.5.2"
 chrono = "0.4"
-http = "0.1.15"
+http = "0.2"
 mime = "0.3"

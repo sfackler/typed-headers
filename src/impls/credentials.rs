@@ -118,7 +118,7 @@ impl FromStr for Credentials {
             None => return Ok(Credentials::from_auth_scheme(auth_scheme)),
         };
 
-        let info = info.trim_left_matches(' ');
+        let info = info.trim_start_matches(' ');
 
         match info.parse::<Token68>() {
             Ok(token) => Ok(Credentials::from_token68(auth_scheme, token)),
