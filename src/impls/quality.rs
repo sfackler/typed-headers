@@ -184,7 +184,7 @@ impl Quality {
 #[cfg(test)]
 mod test {
     use super::*;
-    use Error;
+    use crate::Error;
 
     #[derive(Debug, Clone, PartialEq)]
     struct Item;

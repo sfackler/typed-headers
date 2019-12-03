@@ -1,7 +1,7 @@
 use http::header::{self, HeaderName, HeaderValue, CONTENT_LENGTH};
 use std::ops::{Deref, DerefMut};
 
-use {util, Error, Header, ToValues};
+use crate::{util, Error, Header, ToValues};
 
 /// `Content-Length` header, defined in
 /// [RFC7230](http://tools.ietf.org/html/rfc7230#section-3.3.2)

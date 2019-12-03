@@ -2,7 +2,7 @@ use bytes::Bytes;
 use http::header::{self, HeaderName, HeaderValue, HOST};
 use http::uri::Authority;
 
-use {Error, Header, ToValues};
+use crate::{Error, Header, ToValues};
 
 /// The `Host` header, defined in [RFC7230].
 ///

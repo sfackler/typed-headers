@@ -3,7 +3,7 @@ use std::error;
 use std::fmt::{self, Write};
 use std::str::FromStr;
 
-use {Error, Header, HeaderMapExt, ToValues};
+use crate::{Error, Header, HeaderMapExt, ToValues};
 
 #[inline]
 pub fn is_token(s: &str) -> bool {

@@ -1,19 +1,19 @@
-pub use impls::accept::Accept;
-pub use impls::accept_encoding::AcceptEncoding;
-pub use impls::allow::Allow;
-pub use impls::auth_scheme::AuthScheme;
-pub use impls::authorization::Authorization;
-pub use impls::content_coding::ContentCoding;
-pub use impls::content_encoding::ContentEncoding;
-pub use impls::content_length::ContentLength;
-pub use impls::content_type::ContentType;
-pub use impls::credentials::Credentials;
-pub use impls::host::Host;
-pub use impls::http_date::HttpDate;
-pub use impls::proxy_authorization::ProxyAuthorization;
-pub use impls::quality::{Quality, QualityItem};
-pub use impls::retry_after::RetryAfter;
-pub use impls::token68::Token68;
+pub use self::accept::Accept;
+pub use self::accept_encoding::AcceptEncoding;
+pub use self::allow::Allow;
+pub use self::auth_scheme::AuthScheme;
+pub use self::authorization::Authorization;
+pub use self::content_coding::ContentCoding;
+pub use self::content_encoding::ContentEncoding;
+pub use self::content_length::ContentLength;
+pub use self::content_type::ContentType;
+pub use self::credentials::Credentials;
+pub use self::host::Host;
+pub use self::http_date::HttpDate;
+pub use self::proxy_authorization::ProxyAuthorization;
+pub use self::quality::{Quality, QualityItem};
+pub use self::retry_after::RetryAfter;
+pub use self::token68::Token68;
 
 macro_rules! header {
     // #rule

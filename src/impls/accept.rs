@@ -1,7 +1,7 @@
 use http::header::ACCEPT;
 use mime::Mime;
 
-use QualityItem;
+use super::QualityItem;
 
 header! {
     /// `Accept` header, defined in [RFC7231](http://tools.ietf.org/html/rfc7231#section-5.3.2)
@@ -33,7 +33,7 @@ header! {
 
 #[cfg(test)]
 mod test {
-    use {util, Quality, QualityItem};
+    use crate::{util, Quality, QualityItem};
 
     use super::*;
 

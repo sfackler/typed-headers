@@ -6,6 +6,7 @@ license = "MIT/Apache-2.0"
 description = "Typed HTTP header serialization and deserialization."
 repository = "https://github.com/sfackler/typed-headers"
 readme = "README.md"
+edition = "2018"
 
 [dependencies]
 base64 = "0.11"

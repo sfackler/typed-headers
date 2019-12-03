@@ -2,7 +2,8 @@ use base64;
 use std::fmt;
 use std::str::FromStr;
 
-use {AuthScheme, Error, Token68};
+use crate::Error;
+use super::{AuthScheme, Token68};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum Info {
