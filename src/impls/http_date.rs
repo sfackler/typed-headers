@@ -3,7 +3,7 @@ use std::fmt;
 use std::str::FromStr;
 use std::time::SystemTime;
 
-use Error;
+use crate::Error;
 
 const IMF_FIXDATE_PATTERN: &'static str = "%a, %d %b %Y %T GMT";
 const RFC850_DATE_PATTERN: &'static str = "%A, %d-%b-%y %T GMT";

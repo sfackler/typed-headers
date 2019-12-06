@@ -2,7 +2,8 @@ use base64;
 use std::fmt;
 use std::str::FromStr;
 
-use {AuthScheme, Error, Token68};
+use crate::Error;
+use super::{AuthScheme, Token68};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum Info {
@@ -118,7 +119,7 @@ impl FromStr for Credentials {
             None => return Ok(Credentials::from_auth_scheme(auth_scheme)),
         };
 
-        let info = info.trim_left_matches(' ');
+        let info = info.trim_start_matches(' ');
 
         match info.parse::<Token68>() {
             Ok(token) => Ok(Credentials::from_token68(auth_scheme, token)),

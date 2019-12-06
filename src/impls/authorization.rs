@@ -1,6 +1,6 @@
 use http::header::AUTHORIZATION;
 
-use Credentials;
+use super::Credentials;
 
 header! {
     /// `Authorization` header, defined in [RFC7235](https://tools.ietf.org/html/rfc7235#section-4.2)
@@ -26,7 +26,7 @@ header! {
 #[cfg(test)]
 mod test {
     use super::*;
-    use {util, Token68};
+    use crate::{util, Token68};
 
     #[test]
     fn rfc1() {

@@ -1,6 +1,7 @@
 use http::header::{HeaderName, HeaderValue, ValueIter, RETRY_AFTER};
 
-use {Error, Header, HttpDate, ToValues};
+use crate::{Error, Header, ToValues};
+use super::HttpDate;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RetryAfter {
@@ -47,7 +48,7 @@ impl Header for RetryAfter {
 #[cfg(test)]
 mod test {
     use super::*;
-    use util;
+    use crate::util;
 
     #[test]
     fn rfc1() {

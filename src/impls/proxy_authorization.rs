@@ -1,6 +1,6 @@
 use http::header::PROXY_AUTHORIZATION;
 
-use Credentials;
+use super::Credentials;
 
 header! {
     /// `Proxy-Authorization` header, defined in [RFC7235](https://tools.ietf.org/html/rfc7235#section-4.4)
@@ -27,7 +27,7 @@ header! {
 #[cfg(test)]
 mod test {
     use super::*;
-    use {util, Token68};
+    use crate::{util, Token68};
 
     #[test]
     fn rfc1() {

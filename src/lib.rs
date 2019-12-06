@@ -167,7 +167,7 @@ impl HeaderMapExt for HeaderMap {
     where
         H: Header,
     {
-        let entry = self.entry(H::name()).unwrap();
+        let entry = self.entry(H::name());
         let mut values = ToValues(ToValuesState::First(entry));
         header.to_values(&mut values);
     }
@@ -176,7 +176,7 @@ impl HeaderMapExt for HeaderMap {
     where
         H: Header,
     {
-        match self.entry(H::name()).unwrap() {
+        match self.entry(H::name()) {
             header::Entry::Occupied(entry) => {
                 let r = H::from_values(&mut entry.iter());
                 entry.remove();

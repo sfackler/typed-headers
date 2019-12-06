@@ -1,6 +1,6 @@
 use http::header::ACCEPT_ENCODING;
 
-use {ContentCoding, QualityItem};
+use super::{ContentCoding, QualityItem};
 
 header! {
     /// `Accept-Encoding` header, defined in

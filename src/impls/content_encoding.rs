@@ -1,6 +1,6 @@
 use http::header::CONTENT_ENCODING;
 
-use ContentCoding;
+use super::ContentCoding;
 
 header! {
     /// `Content-Encoding` header, defined in

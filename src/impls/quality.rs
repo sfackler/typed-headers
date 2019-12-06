@@ -39,7 +39,7 @@ where
                 digits[0] = (x % 10) as u8 + b'0';
 
                 let s = unsafe { str::from_utf8_unchecked(&digits[..]) };
-                fmt.write_str(s.trim_right_matches('0'))
+                fmt.write_str(s.trim_end_matches('0'))
             }
         }
     }
@@ -117,7 +117,7 @@ impl<'a> WeightParser<'a> {
 
     fn digit(&mut self) -> Option<u16> {
         match self.peek()? {
-            v @ b'0'...b'9' => {
+            v @ b'0'..=b'9' => {
                 self.next();
                 Some((v - b'0') as u16)
             }
@@ -184,7 +184,7 @@ impl Quality {
 #[cfg(test)]
 mod test {
     use super::*;
-    use Error;
+    use crate::Error;
 
     #[derive(Debug, Clone, PartialEq)]
     struct Item;

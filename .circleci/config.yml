@@ -22,7 +22,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: rust:1.26.2-slim
+      - image: rust:1.39.0-slim
     environment:
       RUSTFLAGS: -D warnings
     steps:

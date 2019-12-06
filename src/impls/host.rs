@@ -2,7 +2,7 @@ use bytes::Bytes;
 use http::header::{self, HeaderName, HeaderValue, HOST};
 use http::uri::Authority;
 
-use {Error, Header, ToValues};
+use crate::{Error, Header, ToValues};
 
 /// The `Host` header, defined in [RFC7230].
 ///
@@ -27,13 +27,13 @@ pub struct Host {
 impl Host {
     /// Creates a Host header from a hostname and optional port.
     #[inline]
-    pub fn new(host: &str, port: Option<u16>) -> Result<Host, Error> {
+    pub fn new(host: &'static str, port: Option<u16>) -> Result<Host, Error> {
         // go through authority to validate the hostname
         let authority = match port {
             Some(port) => Bytes::from(format!("{}:{}", host, port)),
             None => Bytes::from(host),
         };
-        let authority = Authority::from_shared(authority).map_err(|_| Error::invalid_value())?;
+        let authority = Authority::from_maybe_shared(authority).map_err(|_| Error::invalid_value())?;
 
         Ok(Host::from_authority(&authority))
     }
@@ -77,7 +77,7 @@ impl Header for Host {
             None => return Ok(None),
         };
 
-        let authority = Authority::from_shared(Bytes::from(value.as_bytes()))
+        let authority = Authority::from_maybe_shared(Bytes::copy_from_slice(value.as_bytes()))
             .map_err(|_| Error::invalid_value())?;
         // host header can't contain userinfo
         if authority.as_str().contains('@') {
