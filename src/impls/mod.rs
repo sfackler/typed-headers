@@ -1,4 +1,5 @@
 pub use self::accept::Accept;
+pub use self::accept_language::AcceptLanguage;
 pub use self::accept_encoding::AcceptEncoding;
 pub use self::allow::Allow;
 pub use self::auth_scheme::AuthScheme;
@@ -218,6 +219,7 @@ macro_rules! token {
 
 mod accept;
 mod accept_encoding;
+mod accept_language;
 mod allow;
 mod auth_scheme;
 mod authorization;
