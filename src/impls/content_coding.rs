@@ -5,6 +5,10 @@ token! {
         ///
         /// [RFC7932]: https://tools.ietf.org/html/rfc7932
         BROTLI => "br" => [],
+        /// The Zstandard coding, as specified in [RFC8878].
+        ///
+        /// [RFC8878]: https://tools.ietf.org/html/rfc8878
+        ZSTD => "zstd" => [],
         /// The Gzip coding, as specified in [RFC7230].
         ///
         /// [RFC7230]: https://tools.ietf.org/html/rfc7230#section-4.2.3
